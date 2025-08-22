@@ -452,10 +452,32 @@ input:focus, select:focus {
         <div class="help-text">The angle of the bend in degrees</div>
       </div>
       
-      <div class="input-group" id="kFactorInput">
-        <label for="kFactor">K-Factor</label>
-        <input type="number" id="kFactor" step="0.01" placeholder="e.g., 0.33" value="0.33">
-        <div class="help-text">Typical values: 0.33 for soft materials, 0.40-0.45 for harder materials</div>
+      <div class="input-group">
+        <label for="material">Material</label>
+        <select id="material" onchange="updateKFactor()">
+          <option value="0.33">Aluminum 1100 (Soft)</option>
+          <option value="0.35">Aluminum 3003-H14</option>
+          <option value="0.38">Aluminum 5052-H32</option>
+          <option value="0.40">Aluminum 6061-T6</option>
+          <option value="0.33">Copper (Soft)</option>
+          <option value="0.38">Copper (Half Hard)</option>
+          <option value="0.35">Brass (Soft)</option>
+          <option value="0.40">Brass (Hard)</option>
+          <option value="0.40">Cold Rolled Steel (CRS)</option>
+          <option value="0.41">Hot Rolled Steel (HRS)</option>
+          <option value="0.45">Stainless Steel 304</option>
+          <option value="0.50">Stainless Steel 316</option>
+          <option value="0.35">Galvanized Steel</option>
+          <option value="0.38">Mild Steel</option>
+          <option value="custom">Custom K-Factor</option>
+        </select>
+        <div class="help-text" id="kFactorDisplay">K-Factor: 0.33</div>
+      </div>
+      
+      <div class="input-group" id="customKFactorGroup" style="display: none;">
+        <label for="customKFactor">Custom K-Factor</label>
+        <input type="number" id="customKFactor" step="0.01" placeholder="e.g., 0.42" value="0.33" onchange="updateKFactor()">
+        <div class="help-text">Enter a value between 0.25 and 0.50</div>
       </div>
       
       <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="calculate()">
@@ -581,15 +603,91 @@ input:focus, select:focus {
     
     <div id="materials" class="tab-content">
       <div class="info-box">
-        <h3>Common Material K-Factors</h3>
-        <p>
-          • Aluminum (soft): 0.33<br>
-          • Aluminum (hard): 0.35-0.38<br>
-          • Cold Rolled Steel: 0.40-0.45<br>
-          • Stainless Steel: 0.45-0.50<br>
-          • Copper (soft): 0.33<br>
-          • Brass (soft): 0.35<br>
-          • Brass (hard): 0.40
+        <h3>Material K-Factor Reference</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border);">
+              <th style="text-align: left; padding: 0.5rem;">Material</th>
+              <th style="text-align: center; padding: 0.5rem;">K-Factor</th>
+              <th style="text-align: center; padding: 0.5rem;">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Aluminum 1100</td>
+              <td style="text-align: center;">0.33</td>
+              <td style="text-align: center;">Soft, pure aluminum</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Aluminum 3003-H14</td>
+              <td style="text-align: center;">0.35</td>
+              <td style="text-align: center;">Half hard</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Aluminum 5052-H32</td>
+              <td style="text-align: center;">0.38</td>
+              <td style="text-align: center;">Marine grade</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Aluminum 6061-T6</td>
+              <td style="text-align: center;">0.40</td>
+              <td style="text-align: center;">Structural grade</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Copper (Soft)</td>
+              <td style="text-align: center;">0.33</td>
+              <td style="text-align: center;">Annealed</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Copper (Half Hard)</td>
+              <td style="text-align: center;">0.38</td>
+              <td style="text-align: center;">Work hardened</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Brass (Soft)</td>
+              <td style="text-align: center;">0.35</td>
+              <td style="text-align: center;">Annealed</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Brass (Hard)</td>
+              <td style="text-align: center;">0.40</td>
+              <td style="text-align: center;">Work hardened</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Cold Rolled Steel</td>
+              <td style="text-align: center;">0.40</td>
+              <td style="text-align: center;">CRS</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Hot Rolled Steel</td>
+              <td style="text-align: center;">0.41</td>
+              <td style="text-align: center;">HRS</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Stainless Steel 304</td>
+              <td style="text-align: center;">0.45</td>
+              <td style="text-align: center;">Most common SS</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Stainless Steel 316</td>
+              <td style="text-align: center;">0.50</td>
+              <td style="text-align: center;">Marine grade SS</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Galvanized Steel</td>
+              <td style="text-align: center;">0.35</td>
+              <td style="text-align: center;">Zinc coated</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Mild Steel</td>
+              <td style="text-align: center;">0.38</td>
+              <td style="text-align: center;">Low carbon</td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="margin-top: 1rem; font-size: 0.875rem;">
+          <strong>Note:</strong> K-factors can vary based on tooling, grain direction, and bending method. 
+          Always verify with test bends for critical applications.
         </p>
       </div>
     </div>
@@ -1037,22 +1135,11 @@ input:focus, select:focus {
       </table>
       
       <div class="info-box">
-        <h3>Rivet Length Selection</h3>
+        <h3>Rivet Designation System</h3>
+        <p>The first dash number indicates diameter in 1/32" increments.</p>
         <p>The second dash number indicates length in 1/16" increments.</p>
-        <p><strong>Example:</strong> AN470-4-6 = Universal head, 1/8" diameter, 6/16" (3/8") long</p>
-        <p><strong>Rule of thumb:</strong> Rivet length = Total material thickness + 1.5 × diameter</p>
-        <p><strong>Shop head formation:</strong> Requires 1.5D of material protruding</p>
-      </div>
-      
-      <div class="info-box" style="margin-top: 1rem;">
-        <h3>Special Considerations</h3>
-        <ul style="margin: 0.5rem 0;">
-          <li><strong>2024-T4 (Ice Box):</strong> Must be kept refrigerated until use, driven within 20 minutes</li>
-          <li><strong>Countersunk:</strong> Material must be dimpled or countersunk to 100°</li>
-          <li><strong>Edge distance:</strong> Minimum 2× rivet diameter from edge</li>
-          <li><strong>Spacing:</strong> Typically 3-4× rivet diameter between rivets</li>
-          <li><strong>Bucking bar weight:</strong> Should be 3-5× rivet weight for best results</li>
-        </ul>
+        <p><strong>Example:</strong> AN470-4-6 = Universal head, 1/8" diameter (4/32"), 3/8" long (6/16")</p>
+        <p style="margin-top: 0.5rem;"><em>For installation procedures, consult the appropriate Structural Repair Manual (SRM)</em></p>
       </div>
     </div>
   </div>
@@ -1144,12 +1231,35 @@ function setCalculationMode(mode) {
 }
 
 // Main calculation function
+function updateKFactor() {
+  const material = document.getElementById('material');
+  const customGroup = document.getElementById('customKFactorGroup');
+  const kFactorDisplay = document.getElementById('kFactorDisplay');
+  
+  if (material.value === 'custom') {
+    customGroup.style.display = 'block';
+    const customValue = document.getElementById('customKFactor').value;
+    kFactorDisplay.textContent = `K-Factor: ${customValue}`;
+  } else {
+    customGroup.style.display = 'none';
+    kFactorDisplay.textContent = `K-Factor: ${material.value}`;
+  }
+}
+
 function calculate() {
   // Get input values
   const thickness = parseFloat(document.getElementById('thickness').value);
   const bendRadius = parseFloat(document.getElementById('bendRadius').value);
   const bendAngle = parseFloat(document.getElementById('bendAngle').value);
-  let kFactor = parseFloat(document.getElementById('kFactor').value);
+  
+  // Get K-Factor from material selection
+  const material = document.getElementById('material');
+  let kFactor;
+  if (material.value === 'custom') {
+    kFactor = parseFloat(document.getElementById('customKFactor').value);
+  } else {
+    kFactor = parseFloat(material.value);
+  }
   
   if (!thickness || !bendRadius || !bendAngle) {
     alert('Please enter all required values');
