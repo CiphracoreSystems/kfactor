@@ -1596,11 +1596,22 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleUnits(); // Toggle twice to trigger update
   }
   
-  // Register service worker
-  if ('serviceWorker' in navigator) {
+  // Register service worker (disable in development)
+  const isDevelopment = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1';
+  
+  if ('serviceWorker' in navigator && !isDevelopment) {
     navigator.serviceWorker.register('/sw.js')
       .then(reg => console.log('Service Worker registered'))
       .catch(err => console.log('Service Worker registration failed'));
+  } else if ('serviceWorker' in navigator && isDevelopment) {
+    // Unregister any existing service worker in development
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+      for(let registration of registrations) {
+        registration.unregister();
+        console.log('Service worker unregistered for development');
+      }
+    });
   }
 });
 </script>
