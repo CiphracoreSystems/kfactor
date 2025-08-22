@@ -380,6 +380,7 @@ input:focus, select:focus {
 </style>
 </head>
 <body data-theme="light">
+<script src="debug-logger.js"></script>
 
 <header>
   <div class="container">
@@ -1454,20 +1455,29 @@ function calculate() {
 
 // Draw bend diagram
 function drawDiagram(R, T, angle, kFactor) {
+  // Debug logging for scale tracking
+  if (window.debugFunction) {
+    window.debugFunction('drawDiagram', { R, T, angle, kFactor });
+  }
+  
   const svg = document.getElementById('bendDiagram');
   const width = 400;
   const height = 300;
   const centerX = width / 2;
   const centerY = height * 0.7; // Move center down for better visibility
   
-  // Calculate scale to use most of the available space
-  const maxRadius = R + T;
-  const availableSpace = Math.min(width * 0.4, height * 0.4);
-  const scale = availableSpace / maxRadius;
+  // Force a large fixed scale regardless of input values
+  // This ensures the diagram is always clearly visible
+  const finalScale = 2000; // Fixed large scale for visibility
   
-  // Ensure minimum visible size
-  const minScale = 20;
-  const finalScale = Math.max(scale, minScale);
+  // Log the scale value
+  if (window.debugScale) {
+    window.debugScale(finalScale, { 
+      R, T, angle, kFactor,
+      source: 'drawDiagram',
+      fixed: true 
+    });
+  }
   
   // Clear existing
   svg.innerHTML = '';
