@@ -455,20 +455,52 @@ input:focus, select:focus {
       <div class="input-group">
         <label for="material">Material</label>
         <select id="material" onchange="updateKFactor()">
-          <option value="0.33">Aluminum 1100 (Soft)</option>
-          <option value="0.35">Aluminum 3003-H14</option>
-          <option value="0.38">Aluminum 5052-H32</option>
-          <option value="0.40">Aluminum 6061-T6</option>
-          <option value="0.33">Copper (Soft)</option>
-          <option value="0.38">Copper (Half Hard)</option>
-          <option value="0.35">Brass (Soft)</option>
-          <option value="0.40">Brass (Hard)</option>
-          <option value="0.40">Cold Rolled Steel (CRS)</option>
-          <option value="0.41">Hot Rolled Steel (HRS)</option>
-          <option value="0.45">Stainless Steel 304</option>
-          <option value="0.50">Stainless Steel 316</option>
-          <option value="0.35">Galvanized Steel</option>
-          <option value="0.38">Mild Steel</option>
+          <optgroup label="Aluminum - Aerospace">
+            <option value="0.33">Aluminum 2024-O (Annealed)</option>
+            <option value="0.36">Aluminum 2024-T3</option>
+            <option value="0.36">Aluminum 2024-T4</option>
+            <option value="0.33">Aluminum 6061-O (Annealed)</option>
+            <option value="0.36">Aluminum 6061-T4</option>
+            <option value="0.38">Aluminum 6061-T6</option>
+            <option value="0.33">Aluminum 7075-O (Annealed)</option>
+            <option value="0.38">Aluminum 7075-T6</option>
+          </optgroup>
+          <optgroup label="Aluminum - Commercial">
+            <option value="0.33">Aluminum 1100-O (Pure)</option>
+            <option value="0.35">Aluminum 3003-H14</option>
+            <option value="0.36">Aluminum 5052-H32</option>
+            <option value="0.35">Aluminum 5052-O</option>
+          </optgroup>
+          <optgroup label="Stainless Steel">
+            <option value="0.44">Stainless 304 (1/4 Hard)</option>
+            <option value="0.45">Stainless 304 (1/2 Hard)</option>
+            <option value="0.47">Stainless 304 (Full Hard)</option>
+            <option value="0.44">Stainless 316 (1/4 Hard)</option>
+            <option value="0.45">Stainless 316 (1/2 Hard)</option>
+            <option value="0.47">Stainless 316 (Full Hard)</option>
+            <option value="0.45">Stainless 17-7 PH</option>
+            <option value="0.45">Stainless 15-5 PH</option>
+          </optgroup>
+          <optgroup label="Titanium">
+            <option value="0.36">Titanium Grade 2 (CP)</option>
+            <option value="0.38">Titanium Grade 5 (6Al-4V)</option>
+            <option value="0.40">Titanium Grade 9 (3Al-2.5V)</option>
+          </optgroup>
+          <optgroup label="Steel">
+            <option value="0.40">Cold Rolled Steel (CRS)</option>
+            <option value="0.41">Hot Rolled Steel (HRS)</option>
+            <option value="0.38">Mild Steel (A36)</option>
+            <option value="0.35">Galvanized Steel</option>
+            <option value="0.42">4130 Chromoly</option>
+          </optgroup>
+          <optgroup label="Other Metals">
+            <option value="0.33">Copper (Annealed)</option>
+            <option value="0.38">Copper (Half Hard)</option>
+            <option value="0.35">Brass 260 (Soft)</option>
+            <option value="0.40">Brass 360 (Hard)</option>
+            <option value="0.42">Inconel 625</option>
+            <option value="0.43">Inconel 718</option>
+          </optgroup>
           <option value="custom">Custom K-Factor</option>
         </select>
         <div class="help-text" id="kFactorDisplay">K-Factor: 0.33</div>
@@ -613,81 +645,113 @@ input:focus, select:focus {
             </tr>
           </thead>
           <tbody>
+            <tr style="background: rgba(37, 99, 235, 0.05); font-weight: bold;">
+              <td colspan="3" style="padding: 0.5rem;">Aerospace Aluminum</td>
+            </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Aluminum 1100</td>
+              <td style="padding: 0.5rem;">2024-O</td>
               <td style="text-align: center;">0.33</td>
-              <td style="text-align: center;">Soft, pure aluminum</td>
+              <td style="text-align: center;">Annealed for forming</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Aluminum 3003-H14</td>
-              <td style="text-align: center;">0.35</td>
-              <td style="text-align: center;">Half hard</td>
+              <td style="padding: 0.5rem;">2024-T3/T4</td>
+              <td style="text-align: center;">0.36</td>
+              <td style="text-align: center;">Limited bendability</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Aluminum 5052-H32</td>
+              <td style="padding: 0.5rem;">6061-O</td>
+              <td style="text-align: center;">0.33</td>
+              <td style="text-align: center;">Annealed, excellent forming</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">6061-T4</td>
+              <td style="text-align: center;">0.36</td>
+              <td style="text-align: center;">Solution treated</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">6061-T6</td>
               <td style="text-align: center;">0.38</td>
+              <td style="text-align: center;">Full strength, larger radius needed</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">7075-O</td>
+              <td style="text-align: center;">0.33</td>
+              <td style="text-align: center;">Annealed for forming</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">7075-T6</td>
+              <td style="text-align: center;">0.38</td>
+              <td style="text-align: center;">High strength, limited bending</td>
+            </tr>
+            <tr style="background: rgba(37, 99, 235, 0.05); font-weight: bold;">
+              <td colspan="3" style="padding: 0.5rem;">Stainless Steel</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">304 (1/4 Hard)</td>
+              <td style="text-align: center;">0.44</td>
+              <td style="text-align: center;">Light work hardened</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">304 (1/2 Hard)</td>
+              <td style="text-align: center;">0.45</td>
+              <td style="text-align: center;">Standard hardness</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">304 (Full Hard)</td>
+              <td style="text-align: center;">0.47</td>
+              <td style="text-align: center;">Maximum hardness</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">316 Series</td>
+              <td style="text-align: center;">0.44-0.47</td>
               <td style="text-align: center;">Marine grade</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Aluminum 6061-T6</td>
-              <td style="text-align: center;">0.40</td>
-              <td style="text-align: center;">Structural grade</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Copper (Soft)</td>
-              <td style="text-align: center;">0.33</td>
-              <td style="text-align: center;">Annealed</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Copper (Half Hard)</td>
-              <td style="text-align: center;">0.38</td>
-              <td style="text-align: center;">Work hardened</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Brass (Soft)</td>
-              <td style="text-align: center;">0.35</td>
-              <td style="text-align: center;">Annealed</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Brass (Hard)</td>
-              <td style="text-align: center;">0.40</td>
-              <td style="text-align: center;">Work hardened</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Cold Rolled Steel</td>
-              <td style="text-align: center;">0.40</td>
-              <td style="text-align: center;">CRS</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Hot Rolled Steel</td>
-              <td style="text-align: center;">0.41</td>
-              <td style="text-align: center;">HRS</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Stainless Steel 304</td>
+              <td style="padding: 0.5rem;">17-7/15-5 PH</td>
               <td style="text-align: center;">0.45</td>
-              <td style="text-align: center;">Most common SS</td>
+              <td style="text-align: center;">Precipitation hardened</td>
+            </tr>
+            <tr style="background: rgba(37, 99, 235, 0.05); font-weight: bold;">
+              <td colspan="3" style="padding: 0.5rem;">Titanium</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Stainless Steel 316</td>
-              <td style="text-align: center;">0.50</td>
-              <td style="text-align: center;">Marine grade SS</td>
+              <td style="padding: 0.5rem;">Grade 2 (CP)</td>
+              <td style="text-align: center;">0.36</td>
+              <td style="text-align: center;">Commercially pure</td>
             </tr>
             <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Galvanized Steel</td>
-              <td style="text-align: center;">0.35</td>
-              <td style="text-align: center;">Zinc coated</td>
-            </tr>
-            <tr style="border-bottom: 1px solid var(--border);">
-              <td style="padding: 0.5rem;">Mild Steel</td>
+              <td style="padding: 0.5rem;">Grade 5 (6Al-4V)</td>
               <td style="text-align: center;">0.38</td>
-              <td style="text-align: center;">Low carbon</td>
+              <td style="text-align: center;">Most common aerospace</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Grade 9 (3Al-2.5V)</td>
+              <td style="text-align: center;">0.40</td>
+              <td style="text-align: center;">Better formability</td>
+            </tr>
+            <tr style="background: rgba(37, 99, 235, 0.05); font-weight: bold;">
+              <td colspan="3" style="padding: 0.5rem;">Specialty Alloys</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Inconel 625</td>
+              <td style="text-align: center;">0.42</td>
+              <td style="text-align: center;">High temp resistant</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">Inconel 718</td>
+              <td style="text-align: center;">0.43</td>
+              <td style="text-align: center;">Aerospace superalloy</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">4130 Chromoly</td>
+              <td style="text-align: center;">0.42</td>
+              <td style="text-align: center;">Chrome-moly steel</td>
             </tr>
           </tbody>
         </table>
         <p style="margin-top: 1rem; font-size: 0.875rem;">
-          <strong>Note:</strong> K-factors can vary based on tooling, grain direction, and bending method. 
-          Always verify with test bends for critical applications.
+          <strong>Important:</strong> K-factors vary with thickness, tooling, grain direction, and bend radius. 
+          For aerospace applications, always verify with test bends and consult relevant specifications (BAC5300, etc.).
         </p>
       </div>
     </div>
