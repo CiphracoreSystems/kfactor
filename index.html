@@ -546,6 +546,7 @@ input:focus, select:focus {
       <button class="tab active" onclick="showTab('kfactorTable')">K-Factor Table</button>
       <button class="tab" onclick="showTab('materials')">Materials</button>
       <button class="tab" onclick="showTab('formulas')">Formulas</button>
+      <button class="tab" onclick="showTab('tapDrill')">Tap & Drill</button>
     </div>
     
     <div id="kfactorTable" class="tab-content active">
@@ -609,6 +610,257 @@ input:focus, select:focus {
           <strong>Setback:</strong><br>
           ISSB = R + T<br>
           OSSB = (R + T) × tan(A/2)
+        </p>
+      </div>
+    </div>
+    
+    <div id="tapDrill" class="tab-content">
+      <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <button class="toggle-btn active" onclick="showDrillType('unified')" style="padding: 0.5rem 1rem;">Unified (UNC/UNF)</button>
+        <button class="toggle-btn" onclick="showDrillType('metric')" style="padding: 0.5rem 1rem;">Metric (ISO)</button>
+        <button class="toggle-btn" onclick="showDrillType('pipe')" style="padding: 0.5rem 1rem;">Pipe (NPT)</button>
+      </div>
+      
+      <div id="unifiedDrill" class="drill-table">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border);">
+              <th style="text-align: left; padding: 0.5rem;">Size</th>
+              <th style="text-align: center; padding: 0.5rem;">TPI</th>
+              <th style="text-align: center; padding: 0.5rem;">Drill Size (75%)</th>
+              <th style="text-align: center; padding: 0.5rem;">Decimal</th>
+              <th style="text-align: center; padding: 0.5rem;">Tap Drill (50%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">#4-40 UNC</td>
+              <td style="text-align: center;">40</td>
+              <td style="text-align: center;">#43</td>
+              <td style="text-align: center;">0.089"</td>
+              <td style="text-align: center;">#47</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">#6-32 UNC</td>
+              <td style="text-align: center;">32</td>
+              <td style="text-align: center;">#36</td>
+              <td style="text-align: center;">0.1065"</td>
+              <td style="text-align: center;">#41</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">#8-32 UNC</td>
+              <td style="text-align: center;">32</td>
+              <td style="text-align: center;">#29</td>
+              <td style="text-align: center;">0.136"</td>
+              <td style="text-align: center;">#35</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">#10-24 UNC</td>
+              <td style="text-align: center;">24</td>
+              <td style="text-align: center;">#25</td>
+              <td style="text-align: center;">0.1495"</td>
+              <td style="text-align: center;">#31</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">#10-32 UNF</td>
+              <td style="text-align: center;">32</td>
+              <td style="text-align: center;">#21</td>
+              <td style="text-align: center;">0.159"</td>
+              <td style="text-align: center;">#29</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">1/4-20 UNC</td>
+              <td style="text-align: center;">20</td>
+              <td style="text-align: center;">#7</td>
+              <td style="text-align: center;">0.201"</td>
+              <td style="text-align: center;">13/64"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">1/4-28 UNF</td>
+              <td style="text-align: center;">28</td>
+              <td style="text-align: center;">#3</td>
+              <td style="text-align: center;">0.213"</td>
+              <td style="text-align: center;">7/32"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">5/16-18 UNC</td>
+              <td style="text-align: center;">18</td>
+              <td style="text-align: center;">F</td>
+              <td style="text-align: center;">0.257"</td>
+              <td style="text-align: center;">17/64"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">3/8-16 UNC</td>
+              <td style="text-align: center;">16</td>
+              <td style="text-align: center;">5/16"</td>
+              <td style="text-align: center;">0.3125"</td>
+              <td style="text-align: center;">21/64"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">7/16-14 UNC</td>
+              <td style="text-align: center;">14</td>
+              <td style="text-align: center;">U</td>
+              <td style="text-align: center;">0.368"</td>
+              <td style="text-align: center;">25/64"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">1/2-13 UNC</td>
+              <td style="text-align: center;">13</td>
+              <td style="text-align: center;">27/64"</td>
+              <td style="text-align: center;">0.4219"</td>
+              <td style="text-align: center;">7/16"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">5/8-11 UNC</td>
+              <td style="text-align: center;">11</td>
+              <td style="text-align: center;">17/32"</td>
+              <td style="text-align: center;">0.5312"</td>
+              <td style="text-align: center;">9/16"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">3/4-10 UNC</td>
+              <td style="text-align: center;">10</td>
+              <td style="text-align: center;">21/32"</td>
+              <td style="text-align: center;">0.6562"</td>
+              <td style="text-align: center;">11/16"</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="metricDrill" class="drill-table" style="display: none;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border);">
+              <th style="text-align: left; padding: 0.5rem;">Size</th>
+              <th style="text-align: center; padding: 0.5rem;">Pitch</th>
+              <th style="text-align: center; padding: 0.5rem;">Drill Size (75%)</th>
+              <th style="text-align: center; padding: 0.5rem;">Tap Drill (50%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M3 × 0.5</td>
+              <td style="text-align: center;">0.5mm</td>
+              <td style="text-align: center;">2.5mm</td>
+              <td style="text-align: center;">2.6mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M4 × 0.7</td>
+              <td style="text-align: center;">0.7mm</td>
+              <td style="text-align: center;">3.3mm</td>
+              <td style="text-align: center;">3.5mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M5 × 0.8</td>
+              <td style="text-align: center;">0.8mm</td>
+              <td style="text-align: center;">4.2mm</td>
+              <td style="text-align: center;">4.5mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M6 × 1.0</td>
+              <td style="text-align: center;">1.0mm</td>
+              <td style="text-align: center;">5.0mm</td>
+              <td style="text-align: center;">5.2mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M8 × 1.25</td>
+              <td style="text-align: center;">1.25mm</td>
+              <td style="text-align: center;">6.8mm</td>
+              <td style="text-align: center;">7.0mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M10 × 1.5</td>
+              <td style="text-align: center;">1.5mm</td>
+              <td style="text-align: center;">8.5mm</td>
+              <td style="text-align: center;">8.8mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M12 × 1.75</td>
+              <td style="text-align: center;">1.75mm</td>
+              <td style="text-align: center;">10.2mm</td>
+              <td style="text-align: center;">10.5mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M14 × 2.0</td>
+              <td style="text-align: center;">2.0mm</td>
+              <td style="text-align: center;">12.0mm</td>
+              <td style="text-align: center;">12.5mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M16 × 2.0</td>
+              <td style="text-align: center;">2.0mm</td>
+              <td style="text-align: center;">14.0mm</td>
+              <td style="text-align: center;">14.5mm</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">M20 × 2.5</td>
+              <td style="text-align: center;">2.5mm</td>
+              <td style="text-align: center;">17.5mm</td>
+              <td style="text-align: center;">18.0mm</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div id="pipeDrill" class="drill-table" style="display: none;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--border);">
+              <th style="text-align: left; padding: 0.5rem;">NPT Size</th>
+              <th style="text-align: center; padding: 0.5rem;">TPI</th>
+              <th style="text-align: center; padding: 0.5rem;">Drill Size</th>
+              <th style="text-align: center; padding: 0.5rem;">Decimal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">1/8" NPT</td>
+              <td style="text-align: center;">27</td>
+              <td style="text-align: center;">R</td>
+              <td style="text-align: center;">0.339"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">1/4" NPT</td>
+              <td style="text-align: center;">18</td>
+              <td style="text-align: center;">7/16"</td>
+              <td style="text-align: center;">0.4375"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">3/8" NPT</td>
+              <td style="text-align: center;">18</td>
+              <td style="text-align: center;">37/64"</td>
+              <td style="text-align: center;">0.578"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">1/2" NPT</td>
+              <td style="text-align: center;">14</td>
+              <td style="text-align: center;">23/32"</td>
+              <td style="text-align: center;">0.719"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">3/4" NPT</td>
+              <td style="text-align: center;">14</td>
+              <td style="text-align: center;">59/64"</td>
+              <td style="text-align: center;">0.922"</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--border);">
+              <td style="padding: 0.5rem;">1" NPT</td>
+              <td style="text-align: center;">11.5</td>
+              <td style="text-align: center;">1-5/32"</td>
+              <td style="text-align: center;">1.156"</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="info-box" style="margin-top: 1rem;">
+        <h3>Thread Engagement Guidelines</h3>
+        <p>
+          <strong>75% Thread:</strong> Standard for most applications<br>
+          <strong>50% Thread:</strong> For hard materials or when chip clearance is critical<br>
+          <strong>Formula:</strong> Drill Ø = Major Ø - (0.75 × Pitch × 1.732)<br>
+          <strong>Tip:</strong> Use cutting fluid and proper speeds for best results
         </p>
       </div>
     </div>
@@ -849,6 +1101,29 @@ function showTab(tabId) {
     content.classList.remove('active');
   });
   document.getElementById(tabId).classList.add('active');
+}
+
+// Drill type switching
+function showDrillType(type) {
+  // Update toggle buttons
+  document.querySelectorAll('#tapDrill .toggle-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Hide all drill tables
+  document.getElementById('unifiedDrill').style.display = 'none';
+  document.getElementById('metricDrill').style.display = 'none';
+  document.getElementById('pipeDrill').style.display = 'none';
+  
+  // Show selected table
+  if (type === 'unified') {
+    document.getElementById('unifiedDrill').style.display = 'block';
+  } else if (type === 'metric') {
+    document.getElementById('metricDrill').style.display = 'block';
+  } else if (type === 'pipe') {
+    document.getElementById('pipeDrill').style.display = 'block';
+  }
 }
 
 // Help function
