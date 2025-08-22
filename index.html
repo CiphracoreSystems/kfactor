@@ -1455,9 +1455,19 @@ function calculate() {
 // Draw bend diagram
 function drawDiagram(R, T, angle, kFactor) {
   const svg = document.getElementById('bendDiagram');
-  const centerX = 200;
-  const centerY = 150;
-  const scale = 100 / (R + T + 10); // Scale to fit
+  const width = 400;
+  const height = 300;
+  const centerX = width / 2;
+  const centerY = height * 0.7; // Move center down for better visibility
+  
+  // Calculate scale to use most of the available space
+  const maxRadius = R + T;
+  const availableSpace = Math.min(width * 0.4, height * 0.4);
+  const scale = availableSpace / maxRadius;
+  
+  // Ensure minimum visible size
+  const minScale = 20;
+  const finalScale = Math.max(scale, minScale);
   
   // Clear existing
   svg.innerHTML = '';
@@ -1467,7 +1477,7 @@ function drawDiagram(R, T, angle, kFactor) {
   
   // Inside radius arc
   const insideArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  const insideRadius = R * scale;
+  const insideRadius = R * finalScale;
   const x1 = centerX + insideRadius;
   const y1 = centerY;
   const x2 = centerX + insideRadius * Math.cos(angleRad);
@@ -1475,13 +1485,13 @@ function drawDiagram(R, T, angle, kFactor) {
   
   insideArc.setAttribute('d', `M ${x1} ${y1} A ${insideRadius} ${insideRadius} 0 0 0 ${x2} ${y2}`);
   insideArc.setAttribute('stroke', '#ef4444');
-  insideArc.setAttribute('stroke-width', '2');
+  insideArc.setAttribute('stroke-width', '3');
   insideArc.setAttribute('fill', 'none');
   svg.appendChild(insideArc);
   
   // Outside radius arc
   const outsideArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  const outsideRadius = (R + T) * scale;
+  const outsideRadius = (R + T) * finalScale;
   const x3 = centerX + outsideRadius;
   const y3 = centerY;
   const x4 = centerX + outsideRadius * Math.cos(angleRad);
@@ -1489,13 +1499,13 @@ function drawDiagram(R, T, angle, kFactor) {
   
   outsideArc.setAttribute('d', `M ${x3} ${y3} A ${outsideRadius} ${outsideRadius} 0 0 0 ${x4} ${y4}`);
   outsideArc.setAttribute('stroke', '#3b82f6');
-  outsideArc.setAttribute('stroke-width', '2');
+  outsideArc.setAttribute('stroke-width', '3');
   outsideArc.setAttribute('fill', 'none');
   svg.appendChild(outsideArc);
   
   // Neutral axis
   const neutralArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  const neutralRadius = (R + kFactor * T) * scale;
+  const neutralRadius = (R + kFactor * T) * finalScale;
   const x5 = centerX + neutralRadius;
   const y5 = centerY;
   const x6 = centerX + neutralRadius * Math.cos(angleRad);
@@ -1503,27 +1513,68 @@ function drawDiagram(R, T, angle, kFactor) {
   
   neutralArc.setAttribute('d', `M ${x5} ${y5} A ${neutralRadius} ${neutralRadius} 0 0 0 ${x6} ${y6}`);
   neutralArc.setAttribute('stroke', '#10b981');
-  neutralArc.setAttribute('stroke-width', '1');
+  neutralArc.setAttribute('stroke-width', '2');
   neutralArc.setAttribute('stroke-dasharray', '5,5');
   neutralArc.setAttribute('fill', 'none');
   svg.appendChild(neutralArc);
   
-  // Add labels
-  const labels = [
-    { text: 'Inside', x: x1 + 10, y: y1, color: '#ef4444' },
-    { text: 'Outside', x: x3 + 10, y: y3, color: '#3b82f6' },
-    { text: 'Neutral', x: x5 + 10, y: y5, color: '#10b981' }
+  // Add connecting lines from bend to labels
+  const lineEndX = centerX + (outsideRadius + 20);
+  
+  // Draw reference lines
+  const lines = [
+    { y: centerY - outsideRadius - 10, color: '#3b82f6', text: 'Outside Radius' },
+    { y: centerY - neutralRadius - 10, color: '#10b981', text: 'Neutral Axis' },
+    { y: centerY - insideRadius - 10, color: '#ef4444', text: 'Inside Radius' }
   ];
   
-  labels.forEach(label => {
+  // Add legend at the top
+  const legendY = 30;
+  lines.forEach((item, index) => {
+    // Legend line
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', 20);
+    line.setAttribute('x2', 50);
+    line.setAttribute('y1', legendY + index * 20);
+    line.setAttribute('y2', legendY + index * 20);
+    line.setAttribute('stroke', item.color);
+    line.setAttribute('stroke-width', '2');
+    if (item.text === 'Neutral Axis') {
+      line.setAttribute('stroke-dasharray', '5,5');
+    }
+    svg.appendChild(line);
+    
+    // Legend text
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', label.x);
-    text.setAttribute('y', label.y);
-    text.setAttribute('fill', label.color);
-    text.setAttribute('font-size', '12');
-    text.textContent = label.text;
+    text.setAttribute('x', 55);
+    text.setAttribute('y', legendY + index * 20 + 4);
+    text.setAttribute('fill', item.color);
+    text.setAttribute('font-size', '14');
+    text.setAttribute('font-weight', '500');
+    text.textContent = item.text;
     svg.appendChild(text);
   });
+  
+  // Add thickness dimension
+  if (outsideRadius - insideRadius > 5) {
+    const dimLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    dimLine.setAttribute('x1', x1 - 5);
+    dimLine.setAttribute('x2', x3 - 5);
+    dimLine.setAttribute('y1', y1);
+    dimLine.setAttribute('y2', y3);
+    dimLine.setAttribute('stroke', 'var(--text-muted)');
+    dimLine.setAttribute('stroke-width', '1');
+    dimLine.setAttribute('opacity', '0.5');
+    svg.appendChild(dimLine);
+    
+    const dimText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    dimText.setAttribute('x', x1 - 25);
+    dimText.setAttribute('y', (y1 + y3) / 2 + 4);
+    dimText.setAttribute('fill', 'var(--text-muted)');
+    dimText.setAttribute('font-size', '11');
+    dimText.textContent = 'T';
+    svg.appendChild(dimText);
+  }
 }
 
 // Tab switching
