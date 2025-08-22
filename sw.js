@@ -1,5 +1,5 @@
 // Service Worker for K-Factor Calculator
-const CACHE_NAME = 'kfactor-v1';
+const CACHE_NAME = 'kfactor-v2';
 const urlsToCache = [
   '/',
   '/index.html',

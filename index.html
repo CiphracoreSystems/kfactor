@@ -439,6 +439,7 @@ input:focus, select:focus {
           </select>
         </div>
         <div class="help-text">The radius of the bend on the inside surface</div>
+        <div class="help-text" id="radiusRecommendation" style="color: var(--primary); font-weight: 500; margin-top: 0.25rem;"></div>
       </div>
       
       <div class="input-group">
@@ -1308,7 +1309,79 @@ function updateKFactor() {
     customGroup.style.display = 'none';
     kFactorDisplay.textContent = `K-Factor: ${material.value}`;
   }
+  
+  // Update minimum radius recommendation
+  updateRadiusRecommendation();
 }
+
+function updateRadiusRecommendation() {
+  const thickness = parseFloat(document.getElementById('thickness').value);
+  const material = document.getElementById('material');
+  const radiusRec = document.getElementById('radiusRecommendation');
+  const thicknessUnit = document.getElementById('thicknessUnit').value;
+  
+  if (!thickness || !material.value || material.value === 'custom') {
+    radiusRec.textContent = '';
+    return;
+  }
+  
+  const selectedOption = material.options[material.selectedIndex].text;
+  let multiplier = 1.0; // Default minimum
+  
+  // Determine minimum radius multiplier based on material
+  if (selectedOption.includes('2024-T3') || selectedOption.includes('2024-T4')) {
+    multiplier = 3.0; // 2024-T3/T4 needs large radius
+  } else if (selectedOption.includes('2024-O')) {
+    multiplier = 1.0; // Annealed 2024 can bend tighter
+  } else if (selectedOption.includes('7075-T6')) {
+    multiplier = 4.0; // 7075-T6 is very brittle
+  } else if (selectedOption.includes('7075-O')) {
+    multiplier = 1.5; // Annealed 7075
+  } else if (selectedOption.includes('6061-T6')) {
+    multiplier = 2.0; // 6061-T6 moderate
+  } else if (selectedOption.includes('6061-T4')) {
+    multiplier = 1.5; // 6061-T4 better than T6
+  } else if (selectedOption.includes('6061-O')) {
+    multiplier = 0.5; // Annealed 6061 very formable
+  } else if (selectedOption.includes('1100') || selectedOption.includes('3003')) {
+    multiplier = 0.5; // Soft aluminum
+  } else if (selectedOption.includes('5052')) {
+    multiplier = 1.0; // 5052 good formability
+  } else if (selectedOption.includes('Stainless') && selectedOption.includes('Full Hard')) {
+    multiplier = 2.5; // Full hard stainless
+  } else if (selectedOption.includes('Stainless')) {
+    multiplier = 1.5; // Standard stainless
+  } else if (selectedOption.includes('Titanium Grade 2')) {
+    multiplier = 2.5; // CP Titanium
+  } else if (selectedOption.includes('Titanium Grade 5')) {
+    multiplier = 3.0; // 6Al-4V harder to bend
+  } else if (selectedOption.includes('Titanium Grade 9')) {
+    multiplier = 2.0; // Better formability
+  } else if (selectedOption.includes('Inconel')) {
+    multiplier = 3.0; // Superalloys need large radius
+  } else if (selectedOption.includes('4130')) {
+    multiplier = 2.0; // Chromoly
+  } else if (selectedOption.includes('Copper') && selectedOption.includes('Annealed')) {
+    multiplier = 0.5; // Soft copper
+  } else if (selectedOption.includes('Brass') && selectedOption.includes('Soft')) {
+    multiplier = 0.5; // Soft brass
+  }
+  
+  const minRadius = (thickness * multiplier).toFixed(3);
+  radiusRec.textContent = `Minimum recommended: ${minRadius} ${thicknessUnit} (${multiplier}× thickness)`;
+}
+
+// Also call updateRadiusRecommendation when thickness changes
+document.addEventListener('DOMContentLoaded', function() {
+  const thicknessInput = document.getElementById('thickness');
+  if (thicknessInput) {
+    thicknessInput.addEventListener('input', updateRadiusRecommendation);
+  }
+  const thicknessUnit = document.getElementById('thicknessUnit');
+  if (thicknessUnit) {
+    thicknessUnit.addEventListener('change', updateRadiusRecommendation);
+  }
+});
 
 function calculate() {
   // Get input values
