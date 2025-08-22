@@ -547,6 +547,7 @@ input:focus, select:focus {
       <button class="tab" onclick="showTab('materials')">Materials</button>
       <button class="tab" onclick="showTab('formulas')">Formulas</button>
       <button class="tab" onclick="showTab('tapDrill')">Tap & Drill</button>
+      <button class="tab" onclick="showTab('rivets')">Rivets</button>
     </div>
     
     <div id="kfactorTable" class="tab-content active">
@@ -862,6 +863,196 @@ input:focus, select:focus {
           <strong>Formula:</strong> Drill Ø = Major Ø - (0.75 × Pitch × 1.732)<br>
           <strong>Tip:</strong> Use cutting fluid and proper speeds for best results
         </p>
+      </div>
+    </div>
+    
+    <!-- Rivets Reference -->
+    <div id="rivets" class="tab-content">
+      <h3 style="margin-bottom: 1rem;">Aircraft Rivet Reference Chart</h3>
+      
+      <div class="info-box" style="margin-bottom: 1rem;">
+        <p><strong>Rivet Identification:</strong> AN/MS rivets use a standardized marking system</p>
+        <ul style="margin: 0.5rem 0;">
+          <li>No mark = Aluminum alloy 1100 (Pure aluminum, soft)</li>
+          <li>Raised dot (•) = Aluminum alloy 5056</li>
+          <li>Raised double dash (=) = Aluminum alloy 2117-T4</li>
+          <li>Raised cross (+) = Aluminum alloy 2017-T4</li>
+          <li>Raised circle (○) = Aluminum alloy 2024-T4</li>
+          <li>Two raised dots (••) = Aluminum alloy 7050</li>
+        </ul>
+      </div>
+      
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 2rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--border);">
+            <th style="text-align: left; padding: 0.5rem;">Type</th>
+            <th style="text-align: center; padding: 0.5rem;">Head Style</th>
+            <th style="text-align: center; padding: 0.5rem;">Material</th>
+            <th style="text-align: center; padding: 0.5rem;">Marking</th>
+            <th style="text-align: center; padding: 0.5rem;">Use</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN430</td>
+            <td style="text-align: center;">Round</td>
+            <td style="text-align: center;">1100-F</td>
+            <td style="text-align: center;">None</td>
+            <td style="text-align: center;">Soft, non-structural</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN470</td>
+            <td style="text-align: center;">Universal</td>
+            <td style="text-align: center;">2117-T4</td>
+            <td style="text-align: center;">=</td>
+            <td style="text-align: center;">General purpose</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN470</td>
+            <td style="text-align: center;">Universal</td>
+            <td style="text-align: center;">2017-T4</td>
+            <td style="text-align: center;">+</td>
+            <td style="text-align: center;">High strength</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN470</td>
+            <td style="text-align: center;">Universal</td>
+            <td style="text-align: center;">2024-T4</td>
+            <td style="text-align: center;">○</td>
+            <td style="text-align: center;">Ice box rivet</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN470</td>
+            <td style="text-align: center;">Universal</td>
+            <td style="text-align: center;">5056-H32</td>
+            <td style="text-align: center;">•</td>
+            <td style="text-align: center;">Corrosion resistant</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN426</td>
+            <td style="text-align: center;">100° Countersunk</td>
+            <td style="text-align: center;">2117-T4</td>
+            <td style="text-align: center;">=</td>
+            <td style="text-align: center;">Flush installations</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN426</td>
+            <td style="text-align: center;">100° Countersunk</td>
+            <td style="text-align: center;">2017-T4</td>
+            <td style="text-align: center;">+</td>
+            <td style="text-align: center;">High strength flush</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">MS20426</td>
+            <td style="text-align: center;">100° Countersunk</td>
+            <td style="text-align: center;">2024-T4</td>
+            <td style="text-align: center;">○</td>
+            <td style="text-align: center;">Ice box, flush</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">MS20470</td>
+            <td style="text-align: center;">Universal</td>
+            <td style="text-align: center;">Various</td>
+            <td style="text-align: center;">Varies</td>
+            <td style="text-align: center;">Supersedes AN470</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN441</td>
+            <td style="text-align: center;">Flat</td>
+            <td style="text-align: center;">1100-F</td>
+            <td style="text-align: center;">None</td>
+            <td style="text-align: center;">Thin sheets</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 0.5rem;">AN456</td>
+            <td style="text-align: center;">Brazier</td>
+            <td style="text-align: center;">1100-F</td>
+            <td style="text-align: center;">None</td>
+            <td style="text-align: center;">Thin materials</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <h3 style="margin-bottom: 1rem;">Rivet Size Designation</h3>
+      
+      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 2rem;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--border);">
+            <th style="text-align: center; padding: 0.5rem;">Dash Number</th>
+            <th style="text-align: center; padding: 0.5rem;">Diameter (in)</th>
+            <th style="text-align: center; padding: 0.5rem;">Diameter (32nds)</th>
+            <th style="text-align: center; padding: 0.5rem;">Drill Size</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-3</td>
+            <td style="text-align: center;">3/32"</td>
+            <td style="text-align: center;">3</td>
+            <td style="text-align: center;">#40 (0.098")</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-4</td>
+            <td style="text-align: center;">1/8"</td>
+            <td style="text-align: center;">4</td>
+            <td style="text-align: center;">#30 (0.1285")</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-5</td>
+            <td style="text-align: center;">5/32"</td>
+            <td style="text-align: center;">5</td>
+            <td style="text-align: center;">#21 (0.159")</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-6</td>
+            <td style="text-align: center;">3/16"</td>
+            <td style="text-align: center;">6</td>
+            <td style="text-align: center;">#11 (0.191")</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-7</td>
+            <td style="text-align: center;">7/32"</td>
+            <td style="text-align: center;">7</td>
+            <td style="text-align: center;">7/32" (0.219")</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-8</td>
+            <td style="text-align: center;">1/4"</td>
+            <td style="text-align: center;">8</td>
+            <td style="text-align: center;">F (0.257")</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-9</td>
+            <td style="text-align: center;">9/32"</td>
+            <td style="text-align: center;">9</td>
+            <td style="text-align: center;">L (0.290")</td>
+          </tr>
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="text-align: center; padding: 0.5rem;">-10</td>
+            <td style="text-align: center;">5/16"</td>
+            <td style="text-align: center;">10</td>
+            <td style="text-align: center;">P (0.323")</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="info-box">
+        <h3>Rivet Length Selection</h3>
+        <p>The second dash number indicates length in 1/16" increments.</p>
+        <p><strong>Example:</strong> AN470-4-6 = Universal head, 1/8" diameter, 6/16" (3/8") long</p>
+        <p><strong>Rule of thumb:</strong> Rivet length = Total material thickness + 1.5 × diameter</p>
+        <p><strong>Shop head formation:</strong> Requires 1.5D of material protruding</p>
+      </div>
+      
+      <div class="info-box" style="margin-top: 1rem;">
+        <h3>Special Considerations</h3>
+        <ul style="margin: 0.5rem 0;">
+          <li><strong>2024-T4 (Ice Box):</strong> Must be kept refrigerated until use, driven within 20 minutes</li>
+          <li><strong>Countersunk:</strong> Material must be dimpled or countersunk to 100°</li>
+          <li><strong>Edge distance:</strong> Minimum 2× rivet diameter from edge</li>
+          <li><strong>Spacing:</strong> Typically 3-4× rivet diameter between rivets</li>
+          <li><strong>Bucking bar weight:</strong> Should be 3-5× rivet weight for best results</li>
+        </ul>
       </div>
     </div>
   </div>
