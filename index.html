@@ -380,7 +380,7 @@ input:focus, select:focus {
 </style>
 </head>
 <body data-theme="light">
-<script src="debug-logger.js"></script>
+<!-- Debug logger removed from production -->
 
 <header>
   <div class="container">
@@ -389,9 +389,10 @@ input:focus, select:focus {
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M10 2v20M14 2v20M4 7h16M4 17h16"/>
         </svg>
-        K-Factor Calculator
+        <span data-en="K-Factor Calculator" data-es="Calculadora Factor K">K-Factor Calculator</span>
       </h1>
       <div class="header-buttons">
+        <button class="btn btn-secondary" onclick="toggleLanguage()">🌐 ES/EN</button>
         <button class="btn btn-secondary" onclick="toggleTheme()">🌓 Theme</button>
         <button class="btn btn-secondary" onclick="toggleUnits()">📏 Units</button>
         <button class="btn" onclick="showHelp()">❓ Help</button>
@@ -409,7 +410,7 @@ input:focus, select:focus {
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
         </svg>
-        Input Parameters
+        <span data-en="Input Parameters" data-es="Parámetros de Entrada">Input Parameters</span>
       </h2>
       
       <div class="toggle-group">
@@ -419,43 +420,7 @@ input:focus, select:focus {
       </div>
       
       <div class="input-group">
-        <label for="thickness">Material Thickness (T)</label>
-        <div class="input-with-unit">
-          <input type="number" id="thickness" step="0.001" placeholder="Enter thickness">
-          <select id="thicknessUnit">
-            <option value="mm">mm</option>
-            <option value="in">in</option>
-          </select>
-        </div>
-        <div class="help-text">The thickness of the sheet metal</div>
-      </div>
-      
-      <div class="input-group">
-        <label for="bendRadius">Inside Bend Radius (R)</label>
-        <div class="input-with-unit">
-          <input type="number" id="bendRadius" step="0.001" placeholder="Enter radius">
-          <select id="radiusUnit">
-            <option value="mm">mm</option>
-            <option value="in">in</option>
-          </select>
-        </div>
-        <div class="help-text">The radius of the bend on the inside surface</div>
-        <div class="help-text" id="radiusRecommendation" style="color: var(--primary); font-weight: 500; margin-top: 0.25rem;"></div>
-      </div>
-      
-      <div class="input-group">
-        <label for="bendAngle">Bend Angle (A)</label>
-        <div class="input-with-unit">
-          <input type="number" id="bendAngle" step="0.1" placeholder="Enter angle" value="90">
-          <select disabled>
-            <option>degrees</option>
-          </select>
-        </div>
-        <div class="help-text">The angle of the bend in degrees</div>
-      </div>
-      
-      <div class="input-group">
-        <label for="material">Material</label>
+        <label for="material" data-en="Material" data-es="Material">Material</label>
         <select id="material" onchange="updateKFactor()">
           <optgroup label="Aluminum - Aerospace">
             <option value="0.33">Aluminum 2024-O (Annealed)</option>
@@ -505,13 +470,76 @@ input:focus, select:focus {
           </optgroup>
           <option value="custom">Custom K-Factor</option>
         </select>
+        <div class="help-text" data-en="Select material to auto-populate K-Factor" data-es="Seleccione material para auto-completar Factor K">Select material to auto-populate K-Factor</div>
         <div class="help-text" id="kFactorDisplay">K-Factor: 0.33</div>
+      </div>
+      
+      <div class="input-group">
+        <label for="thickness" data-en="Material Thickness (T)" data-es="Espesor del Material (T)">Material Thickness (T)</label>
+        <div class="input-with-unit">
+          <input type="number" id="thickness" step="0.001" placeholder="Enter thickness">
+          <select id="thicknessUnit">
+            <option value="mm">mm</option>
+            <option value="in">in</option>
+          </select>
+        </div>
+        <div class="help-text" data-en="The thickness of the sheet metal" data-es="El espesor de la lámina metálica">The thickness of the sheet metal</div>
+      </div>
+      
+      <div class="input-group">
+        <label for="bendRadius" data-en="Inside Bend Radius (R)" data-es="Radio Interior del Doblez (R)">Inside Bend Radius (R)</label>
+        <div class="input-with-unit">
+          <input type="number" id="bendRadius" step="0.001" placeholder="Enter radius">
+          <select id="radiusUnit">
+            <option value="mm">mm</option>
+            <option value="in">in</option>
+          </select>
+        </div>
+        <div class="help-text" data-en="The radius of the bend on the inside surface" data-es="El radio del doblez en la superficie interior">The radius of the bend on the inside surface</div>
+        <div class="help-text" id="radiusRecommendation" style="color: var(--primary); font-weight: 500; margin-top: 0.25rem;"></div>
+      </div>
+      
+      <div class="input-group">
+        <label for="bendAngle" data-en="Bend Angle (A)" data-es="Ángulo del Doblez (A)">Bend Angle (A)</label>
+        <div class="input-with-unit">
+          <input type="number" id="bendAngle" step="0.1" placeholder="Enter angle" value="90">
+          <select disabled>
+            <option>degrees</option>
+          </select>
+        </div>
+        <div class="help-text" data-en="The angle of the bend in degrees" data-es="El ángulo del doblez en grados">The angle of the bend in degrees</div>
       </div>
       
       <div class="input-group" id="customKFactorGroup" style="display: none;">
         <label for="customKFactor">Custom K-Factor</label>
         <input type="number" id="customKFactor" step="0.01" placeholder="e.g., 0.42" value="0.33" onchange="updateKFactor()">
-        <div class="help-text">Enter a value between 0.25 and 0.50</div>
+        <div class="help-text" data-en="Enter a value between 0.25 and 0.50" data-es="Ingrese un valor entre 0.25 y 0.50">Enter a value between 0.25 and 0.50</div>
+      </div>
+      
+      <!-- Bend Allowance input for BA mode -->
+      <div class="input-group" id="bendAllowanceInput" style="display: none;">
+        <label for="bendAllowanceValue" data-en="Known Bend Allowance" data-es="Tolerancia de Doblez Conocida">Known Bend Allowance</label>
+        <div class="input-with-unit">
+          <input type="number" id="bendAllowanceValue" step="0.001" placeholder="Enter BA value" onchange="calculate()">
+          <select id="baUnit" onchange="calculate()">
+            <option value="mm">mm</option>
+            <option value="in">in</option>
+          </select>
+        </div>
+        <div class="help-text" data-en="Enter the known bend allowance value" data-es="Ingrese el valor conocido de tolerancia de doblez">Enter the known bend allowance value</div>
+      </div>
+      
+      <!-- Bend Deduction input for BD mode -->
+      <div class="input-group" id="bendDeductionInput" style="display: none;">
+        <label for="bendDeductionValue" data-en="Known Bend Deduction" data-es="Deducción de Doblez Conocida">Known Bend Deduction</label>
+        <div class="input-with-unit">
+          <input type="number" id="bendDeductionValue" step="0.001" placeholder="Enter BD value" onchange="calculate()">
+          <select id="bdUnit" onchange="calculate()">
+            <option value="mm">mm</option>
+            <option value="in">in</option>
+          </select>
+        </div>
+        <div class="help-text" data-en="Enter the known bend deduction value" data-es="Ingrese el valor conocido de deducción de doblez">Enter the known bend deduction value</div>
       </div>
       
       <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="calculate()">
@@ -525,7 +553,7 @@ input:focus, select:focus {
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 11H3v2h6v-2zm0-4H3v2h6V7zm0 8H3v2h6v-2zm12-8h-6v2h6V7zm0 4h-6v2h6v-2zm0 4h-6v2h6v-2z"/>
         </svg>
-        Results
+        <span data-en="Results" data-es="Resultados">Results</span>
       </h2>
       
       <div class="result-box">
@@ -566,24 +594,7 @@ input:focus, select:focus {
     </div>
   </div>
   
-  <!-- Visual Diagram -->
-  <div class="card">
-    <h2>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-        <circle cx="12" cy="12" r="3"/>
-      </svg>
-      Bend Diagram
-    </h2>
-    <div class="diagram">
-      <svg id="bendDiagram" width="400" height="300" viewBox="0 0 400 300">
-        <!-- Diagram will be drawn here by JavaScript -->
-        <text x="200" y="150" text-anchor="middle" fill="var(--text-muted)">
-          Enter values to see diagram
-        </text>
-      </svg>
-    </div>
-  </div>
+  <!-- Bend Diagram removed - not providing useful measurements -->
   
   <!-- Reference Tables -->
   <div class="card">
@@ -1246,6 +1257,33 @@ function dismissInstall() {
   document.getElementById('installPrompt').classList.remove('show');
 }
 
+// Language toggle
+let currentLanguage = 'en';
+
+function toggleLanguage() {
+  currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
+  updateLanguage();
+  localStorage.setItem('language', currentLanguage);
+}
+
+function updateLanguage() {
+  // Update all elements with data-en and data-es attributes
+  document.querySelectorAll('[data-en][data-es]').forEach(element => {
+    const text = element.getAttribute(`data-${currentLanguage}`);
+    if (text) {
+      element.textContent = text;
+    }
+  });
+  
+  // Update optgroups
+  document.querySelectorAll('optgroup[data-en][data-es]').forEach(element => {
+    const label = element.getAttribute(`data-${currentLanguage}`);
+    if (label) {
+      element.label = label;
+    }
+  });
+}
+
 // Theme toggle
 function toggleTheme() {
   const body = document.body;
@@ -1254,21 +1292,27 @@ function toggleTheme() {
   localStorage.setItem('theme', body.getAttribute('data-theme'));
 }
 
-// Load saved theme
+// Load saved theme and language
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
   document.body.setAttribute('data-theme', savedTheme);
+  
+  const savedLanguage = localStorage.getItem('language') || 'en';
+  currentLanguage = savedLanguage;
+  updateLanguage();
 });
 
 // Units toggle
 function toggleUnits() {
   currentUnits = currentUnits === 'metric' ? 'imperial' : 'metric';
   
-  // Update unit selects
-  const unitSelects = ['thicknessUnit', 'radiusUnit'];
+  // Update unit selects including new BA and BD units
+  const unitSelects = ['thicknessUnit', 'radiusUnit', 'baUnit', 'bdUnit'];
   unitSelects.forEach(id => {
     const select = document.getElementById(id);
-    select.value = currentUnits === 'metric' ? 'mm' : 'in';
+    if (select) {
+      select.value = currentUnits === 'metric' ? 'mm' : 'in';
+    }
   });
   
   // Recalculate if we have values
@@ -1287,13 +1331,34 @@ function setCalculationMode(mode) {
   });
   event.target.classList.add('active');
   
-  // Show/hide K-factor input based on mode
+  // Show/hide appropriate input fields based on mode
   const kFactorInput = document.getElementById('kFactorInput');
+  const bendAllowanceInput = document.getElementById('bendAllowanceInput');
+  const bendDeductionInput = document.getElementById('bendDeductionInput');
+  const customKFactorGroup = document.getElementById('customKFactorGroup');
+  
+  // Hide all mode-specific inputs first
+  kFactorInput.style.display = 'none';
+  bendAllowanceInput.style.display = 'none';
+  bendDeductionInput.style.display = 'none';
+  customKFactorGroup.style.display = 'none';
+  
+  // Show the appropriate input based on mode
   if (mode === 'k-factor') {
     kFactorInput.style.display = 'block';
-  } else {
-    kFactorInput.style.display = 'none';
+    // Show custom K-factor input if custom is selected
+    const material = document.getElementById('material');
+    if (material.value === 'custom') {
+      customKFactorGroup.style.display = 'block';
+    }
+  } else if (mode === 'bend-allowance') {
+    bendAllowanceInput.style.display = 'block';
+  } else if (mode === 'bend-deduction') {
+    bendDeductionInput.style.display = 'block';
   }
+  
+  // Recalculate with new mode
+  calculate();
 }
 
 // Main calculation function
@@ -1390,17 +1455,8 @@ function calculate() {
   const bendRadius = parseFloat(document.getElementById('bendRadius').value);
   const bendAngle = parseFloat(document.getElementById('bendAngle').value);
   
-  // Get K-Factor from material selection
-  const material = document.getElementById('material');
-  let kFactor;
-  if (material.value === 'custom') {
-    kFactor = parseFloat(document.getElementById('customKFactor').value);
-  } else {
-    kFactor = parseFloat(material.value);
-  }
-  
   if (!thickness || !bendRadius || !bendAngle) {
-    alert('Please enter all required values');
+    // Don't show alert on initial load or mode switch
     return;
   }
   
@@ -1414,27 +1470,82 @@ function calculate() {
   if (thicknessUnit === 'in') T = thickness * 25.4;
   if (radiusUnit === 'in') R = bendRadius * 25.4;
   
-  // If K-factor not provided, estimate based on R/T ratio
-  if (!kFactor || currentMode !== 'k-factor') {
-    const ratio = R / T;
-    if (ratio < 1) kFactor = 0.33;
-    else if (ratio <= 3) kFactor = 0.40;
-    else kFactor = 0.45;
-  }
-  
   // Convert angle to radians
   const A = bendAngle * Math.PI / 180;
   
-  // Calculate Bend Allowance
-  const BA = Math.PI * (R + kFactor * T) * bendAngle / 180;
+  let kFactor, BA, BD;
   
-  // Calculate Bend Deduction
-  const BD = 2 * (R + T) * Math.tan(A / 2) - BA;
+  // Calculate based on current mode
+  if (currentMode === 'k-factor') {
+    // Mode 1: Known K-Factor, calculate BA and BD
+    const material = document.getElementById('material');
+    if (material.value === 'custom') {
+      kFactor = parseFloat(document.getElementById('customKFactor').value);
+    } else {
+      kFactor = parseFloat(material.value);
+    }
+    
+    if (!kFactor) {
+      // Estimate based on R/T ratio if not provided
+      const ratio = R / T;
+      if (ratio < 1) kFactor = 0.33;
+      else if (ratio <= 3) kFactor = 0.40;
+      else kFactor = 0.45;
+    }
+    
+    // Calculate BA and BD from K-Factor
+    BA = Math.PI * (R + kFactor * T) * bendAngle / 180;
+    BD = 2 * (R + T) * Math.tan(A / 2) - BA;
+    
+  } else if (currentMode === 'bend-allowance') {
+    // Mode 2: Known BA, calculate K-Factor and BD
+    const baValue = parseFloat(document.getElementById('bendAllowanceValue').value);
+    const baUnit = document.getElementById('baUnit').value;
+    
+    if (!baValue) return;
+    
+    // Convert BA to mm if needed
+    BA = baUnit === 'in' ? baValue * 25.4 : baValue;
+    
+    // Calculate K-Factor from known BA
+    // BA = π × (R + K×T) × A/180
+    // Solving for K: K = (BA × 180 / (π × A) - R) / T
+    kFactor = (BA * 180 / (Math.PI * bendAngle) - R) / T;
+    
+    // Validate K-Factor range
+    if (kFactor < 0.25 || kFactor > 0.50) {
+      console.warn('Calculated K-Factor is outside typical range:', kFactor);
+    }
+    
+    // Calculate BD from BA
+    BD = 2 * (R + T) * Math.tan(A / 2) - BA;
+    
+  } else if (currentMode === 'bend-deduction') {
+    // Mode 3: Known BD, calculate K-Factor and BA
+    const bdValue = parseFloat(document.getElementById('bendDeductionValue').value);
+    const bdUnit = document.getElementById('bdUnit').value;
+    
+    if (!bdValue) return;
+    
+    // Convert BD to mm if needed
+    BD = bdUnit === 'in' ? bdValue * 25.4 : bdValue;
+    
+    // Calculate BA from known BD
+    // BD = 2 × (R + T) × tan(A/2) - BA
+    // Solving for BA: BA = 2 × (R + T) × tan(A/2) - BD
+    BA = 2 * (R + T) * Math.tan(A / 2) - BD;
+    
+    // Calculate K-Factor from BA
+    kFactor = (BA * 180 / (Math.PI * bendAngle) - R) / T;
+    
+    // Validate K-Factor range
+    if (kFactor < 0.25 || kFactor > 0.50) {
+      console.warn('Calculated K-Factor is outside typical range:', kFactor);
+    }
+  }
   
-  // Calculate Neutral Axis location
+  // Calculate derived values
   const neutralAxis = kFactor * T;
-  
-  // Calculate Setbacks
   const ISSB = R + T;
   const OSSB = (R + T) * Math.tan(A / 2);
   
@@ -1449,11 +1560,65 @@ function calculate() {
   document.getElementById('resultISSB').textContent = (ISSB * conversionFactor).toFixed(3) + ' ' + displayUnit;
   document.getElementById('resultOSSB').textContent = (OSSB * conversionFactor).toFixed(3) + ' ' + displayUnit;
   
-  // Update diagram
-  drawDiagram(R, T, bendAngle, kFactor);
+  // Diagram removed - was not providing useful information
 }
 
-// Draw bend diagram
+// Global zoom level
+let currentZoom = 1.0;
+
+// Zoom control functions
+function adjustZoom(factor) {
+  currentZoom *= factor;
+  // Limit zoom range
+  if (currentZoom < 0.2) currentZoom = 0.2;
+  if (currentZoom > 5) currentZoom = 5;
+  
+  updateZoomDisplay();
+  
+  // Redraw diagram with new zoom if we have values
+  const thickness = parseFloat(document.getElementById('thickness').value);
+  const bendRadius = parseFloat(document.getElementById('bendRadius').value);
+  const bendAngle = parseFloat(document.getElementById('bendAngle').value);
+  
+  if (thickness && bendRadius && bendAngle) {
+    // Get units
+    const thicknessUnit = document.getElementById('thicknessUnit').value;
+    const radiusUnit = document.getElementById('radiusUnit').value;
+    
+    let T = thickness;
+    let R = bendRadius;
+    
+    if (thicknessUnit === 'in') T = thickness * 25.4;
+    if (radiusUnit === 'in') R = bendRadius * 25.4;
+    
+    // Get K-factor
+    const material = document.getElementById('material');
+    let kFactor;
+    if (material.value === 'custom') {
+      kFactor = parseFloat(document.getElementById('customKFactor').value);
+    } else {
+      kFactor = parseFloat(material.value);
+    }
+    
+    // Diagram removed
+  }
+}
+
+function resetZoom() {
+  currentZoom = 1.0;
+  updateZoomDisplay();
+  adjustZoom(1.0); // Trigger redraw
+}
+
+function updateZoomDisplay() {
+  const zoomLevel = document.getElementById('zoomLevel');
+  if (zoomLevel) {
+    zoomLevel.textContent = Math.round(currentZoom * 100) + '%';
+  }
+}
+
+// Diagram function removed - was not providing useful information
+/* Removed drawDiagram function
 function drawDiagram(R, T, angle, kFactor) {
   // Debug logging for scale tracking
   if (window.debugFunction) {
@@ -1463,12 +1628,31 @@ function drawDiagram(R, T, angle, kFactor) {
   const svg = document.getElementById('bendDiagram');
   const width = 400;
   const height = 300;
-  const centerX = width / 2;
-  const centerY = height * 0.7; // Move center down for better visibility
   
-  // Force a large fixed scale regardless of input values
-  // This ensures the diagram is always clearly visible
-  const finalScale = 2000; // Fixed large scale for visibility
+  // Calculate the maximum radius (outside radius)
+  const maxRadius = R + T;
+  
+  // Calculate scale to fit the diagram in the box with padding
+  // We need to fit the bend arc plus some padding
+  const padding = 40; // Padding from edges
+  const availableWidth = width - (2 * padding);
+  const availableHeight = height - (2 * padding);
+  
+  // The bend needs space for the radius in both directions from center
+  // For a 90-degree bend, we need radius space horizontally and vertically
+  const requiredSize = maxRadius * 2; // Diameter of the bend
+  
+  // Calculate scale to fit within available space
+  const scaleX = availableWidth / requiredSize;
+  const scaleY = availableHeight / requiredSize;
+  const autoScale = Math.min(scaleX, scaleY);
+  
+  // Apply user zoom on top of auto-scale
+  const finalScale = autoScale * currentZoom;
+  
+  // Center the diagram in the available space
+  const centerX = width / 2;
+  const centerY = height / 2;
   
   // Log the scale value
   if (window.debugScale) {
@@ -1481,6 +1665,96 @@ function drawDiagram(R, T, angle, kFactor) {
   
   // Clear existing
   svg.innerHTML = '';
+  
+  // Add coordinate grid for testing
+  const gridSpacing = 50; // Every 50 pixels
+  
+  // Vertical grid lines and labels (X-axis)
+  for (let x = 0; x <= width; x += gridSpacing) {
+    const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    gridLine.setAttribute('x1', x);
+    gridLine.setAttribute('x2', x);
+    gridLine.setAttribute('y1', 0);
+    gridLine.setAttribute('y2', height);
+    gridLine.setAttribute('stroke', '#333');
+    gridLine.setAttribute('stroke-width', '0.5');
+    gridLine.setAttribute('opacity', '0.3');
+    svg.appendChild(gridLine);
+    
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', x);
+    label.setAttribute('y', height - 5);
+    label.setAttribute('fill', '#666');
+    label.setAttribute('font-size', '8');
+    label.setAttribute('text-anchor', 'middle');
+    label.textContent = x;
+    svg.appendChild(label);
+  }
+  
+  // Horizontal grid lines and labels (Y-axis)
+  for (let y = 0; y <= height; y += gridSpacing) {
+    const gridLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    gridLine.setAttribute('x1', 0);
+    gridLine.setAttribute('x2', width);
+    gridLine.setAttribute('y1', y);
+    gridLine.setAttribute('y2', y);
+    gridLine.setAttribute('stroke', '#333');
+    gridLine.setAttribute('stroke-width', '0.5');
+    gridLine.setAttribute('opacity', '0.3');
+    svg.appendChild(gridLine);
+    
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', 5);
+    label.setAttribute('y', y + 3);
+    label.setAttribute('fill', '#666');
+    label.setAttribute('font-size', '8');
+    label.textContent = y;
+    svg.appendChild(label);
+  }
+  
+  // Add center crosshair
+  const crossV = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  crossV.setAttribute('x1', centerX);
+  crossV.setAttribute('x2', centerX);
+  crossV.setAttribute('y1', centerY - 20);
+  crossV.setAttribute('y2', centerY + 20);
+  crossV.setAttribute('stroke', '#ff0');
+  crossV.setAttribute('stroke-width', '1');
+  svg.appendChild(crossV);
+  
+  const crossH = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  crossH.setAttribute('x1', centerX - 20);
+  crossH.setAttribute('x2', centerX + 20);
+  crossH.setAttribute('y1', centerY);
+  crossH.setAttribute('y2', centerY);
+  crossH.setAttribute('stroke', '#ff0');
+  crossH.setAttribute('stroke-width', '1');
+  svg.appendChild(crossH);
+  
+  // Add center coordinates label
+  const centerLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  centerLabel.setAttribute('x', centerX + 25);
+  centerLabel.setAttribute('y', centerY - 5);
+  centerLabel.setAttribute('fill', '#ff0');
+  centerLabel.setAttribute('font-size', '10');
+  centerLabel.textContent = `Center: (${centerX}, ${centerY})`;
+  svg.appendChild(centerLabel);
+  
+  // Debug info moved to debug logger panel instead of inside diagram
+  // Log the scale and radius info to the debug panel
+  if (window.debugLogger && window.debugLogger.isEnabled) {
+    window.debugLogger.log('Diagram Values', {
+      autoScale: autoScale.toFixed(2),
+      finalScale: finalScale.toFixed(2),
+      zoomLevel: currentZoom.toFixed(2),
+      R: R,
+      T: T,
+      maxRadius: maxRadius,
+      availableSpace: `${availableWidth}x${availableHeight}`,
+      scaledInsideR: (R * finalScale).toFixed(1) + 'px',
+      scaledOutsideR: ((R + T) * finalScale).toFixed(1) + 'px'
+    });
+  }
   
   // Draw the bent sheet
   const angleRad = angle * Math.PI / 180;
@@ -1538,15 +1812,17 @@ function drawDiagram(R, T, angle, kFactor) {
     { y: centerY - insideRadius - 10, color: '#ef4444', text: 'Inside Radius' }
   ];
   
-  // Add legend at the top
-  const legendY = 30;
+  // Add legend at the bottom-right corner to avoid grid overlap
+  const legendX = width - 120;
+  const legendY = height - 80;
+  const legendSpacing = 20; // Spacing between items
   lines.forEach((item, index) => {
     // Legend line
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', 20);
-    line.setAttribute('x2', 50);
-    line.setAttribute('y1', legendY + index * 20);
-    line.setAttribute('y2', legendY + index * 20);
+    line.setAttribute('x1', legendX);
+    line.setAttribute('x2', legendX + 20);
+    line.setAttribute('y1', legendY + index * legendSpacing);
+    line.setAttribute('y2', legendY + index * legendSpacing);
     line.setAttribute('stroke', item.color);
     line.setAttribute('stroke-width', '2');
     if (item.text === 'Neutral Axis') {
@@ -1556,11 +1832,11 @@ function drawDiagram(R, T, angle, kFactor) {
     
     // Legend text
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', 55);
-    text.setAttribute('y', legendY + index * 20 + 4);
+    text.setAttribute('x', legendX + 25);
+    text.setAttribute('y', legendY + index * legendSpacing + 4);
     text.setAttribute('fill', item.color);
-    text.setAttribute('font-size', '14');
-    text.setAttribute('font-weight', '500');
+    text.setAttribute('font-size', '10');
+    text.setAttribute('font-weight', '400');
     text.textContent = item.text;
     svg.appendChild(text);
   });
@@ -1585,7 +1861,7 @@ function drawDiagram(R, T, angle, kFactor) {
     dimText.textContent = 'T';
     svg.appendChild(dimText);
   }
-}
+} */
 
 // Tab switching
 function showTab(tabId) {
