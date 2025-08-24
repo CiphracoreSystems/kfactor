@@ -1,5 +1,5 @@
 // Service Worker for K-Factor Calculator
-const CACHE_NAME = 'kfactor-v3';
+const CACHE_NAME = 'kfactor-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -37,31 +37,36 @@ self.addEventListener('activate', event => {
 
 // Fetch event
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
+  event.respondWith((async () => {
+    const req = event.request;
+
+    // Ensure SPA works offline: serve index.html for navigations
+    if (req.mode === 'navigate') {
+      const cache = await caches.open(CACHE_NAME);
+      const cachedShell = await cache.match('/index.html');
+      if (cachedShell) return cachedShell;
+      // Fallback to network if not cached yet
+      try { return await fetch(req); } catch (e) { return new Response('Offline', { status: 503 }); }
+    }
+
+    // Cache-first for other requests
+    const cached = await caches.match(req);
+    if (cached) return cached;
+    try {
+      const res = await fetch(req);
+      // Only cache successful, same-origin, basic responses
+      if (res && res.status === 200 && res.type === 'basic') {
+        const cache = await caches.open(CACHE_NAME);
+        try {
+          await cache.put(req, res.clone());
+        } catch (e) {
+          // Ignore cache put errors (e.g., opaque requests)
         }
-        return fetch(event.request).then(
-          response => {
-            // Check if valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-            
-            // Clone the response
-            const responseToCache = response.clone();
-            
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-            
-            return response;
-          }
-        );
-      })
-  );
+      }
+      return res;
+    } catch (e) {
+      // Network failed and no cache
+      return new Response('Offline', { status: 503 });
+    }
+  })());
 });

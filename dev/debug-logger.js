@@ -36,19 +36,18 @@ class DebugLogger {
           position: fixed;
           bottom: 10px;
           left: 10px;
-          right: 10px;
-          max-width: 90vw;
-          max-height: 300px;
-          background: rgba(0, 0, 0, 0.95);
+          width: 300px;
+          max-width: 40vw;
+          max-height: 200px;
+          background: rgba(0, 0, 0, 0.85);
           color: #0f0;
           font-family: monospace;
-          font-size: 10px;
-          border: 2px solid #0f0;
+          font-size: 9px;
+          border: 1px solid #0f0;
           border-radius: 5px;
           z-index: 10000;
-          padding: 10px;
+          padding: 8px;
           overflow-y: auto;
-          box-shadow: 0 0 20px #0f0;
         }
         #debugPanel h3 {
           margin: 0 0 10px 0;
@@ -95,13 +94,18 @@ class DebugLogger {
           background: #0a0;
         }
       </style>
-      <h3>🔍 Debug Logger</h3>
-      <div id="debugLog"></div>
-      <div id="debugControls">
-        <button onclick="debugLogger.clear()">Clear</button>
-        <button onclick="debugLogger.export()">Export</button>
-        <button onclick="debugLogger.copyLast()">Copy Last</button>
-        <button onclick="debugLogger.disable()">Disable</button>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">🔍 Debug Logger</h3>
+        <button onclick="debugLogger.minimize()" style="background: transparent; border: none; color: #0f0; font-size: 16px; cursor: pointer;">_</button>
+      </div>
+      <div id="debugContent">
+        <div id="debugLog"></div>
+        <div id="debugControls">
+          <button onclick="debugLogger.clear()">Clear</button>
+          <button onclick="debugLogger.export()">Export</button>
+          <button onclick="debugLogger.copyLast()">Copy Last</button>
+          <button onclick="debugLogger.disable()">Disable</button>
+        </div>
       </div>
     `;
     document.body.appendChild(panel);
@@ -277,6 +281,20 @@ class DebugLogger {
     }
   }
 
+  minimize() {
+    const content = document.getElementById('debugContent');
+    const panel = document.getElementById('debugPanel');
+    if (content) {
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        panel.style.maxHeight = '200px';
+      } else {
+        content.style.display = 'none';
+        panel.style.maxHeight = '30px';
+      }
+    }
+  }
+
   disable() {
     localStorage.setItem('debugMode', 'false');
     const panel = document.getElementById('debugPanel');
@@ -297,6 +315,20 @@ class DebugLogger {
 // Initialize logger
 const debugLogger = new DebugLogger();
 
+// Add global debug functions for easy access
+window.debugLog = (message, type = 'info') => {
+  debugLogger.log(`[${type}] ${message}`, { type });
+};
+
+window.debugFunction = (name, params) => {
+  debugLogger.log(`Function called: ${name}`, params);
+};
+
+window.debugScale = (scale, metadata) => {
+  debugLogger.log('Scale value', { scale, ...metadata });
+};
+
 // Add console command to enable debugging
 console.log('%c📍 Debug Mode: Type debugLogger.enable() to start logging', 
   'color: #0f0; font-weight: bold; font-size: 14px');
+

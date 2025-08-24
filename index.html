@@ -7,6 +7,34 @@
 <meta name="description" content="Calculate K-Factor, Bend Allowance, and Bend Deduction for sheet metal fabrication. Convert between metric and imperial units.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
+<script>
+  // Analytics configuration (disabled by default). To enable Plausible, set enabled:true and domain.
+  // Example: window.analyticsConfig = { enabled: true, provider: 'plausible', domain: 'your-site.netlify.app' };
+  window.analyticsConfig = window.analyticsConfig || { enabled: false, provider: 'plausible', domain: '' };
+  window.analyticsOptOut = localStorage.getItem('analyticsOptOut') === 'true';
+  function injectAnalytics() {
+    if (!window.analyticsConfig.enabled || window.analyticsOptOut) return;
+    if (window.analyticsConfig.provider === 'plausible' && window.analyticsConfig.domain) {
+      const s = document.createElement('script');
+      s.defer = true;
+      s.setAttribute('data-domain', window.analyticsConfig.domain);
+      s.src = 'https://plausible.io/js/script.js';
+      document.head.appendChild(s);
+    }
+  }
+  function sendAnalyticsEvent(name, props) {
+    if (window.analyticsOptOut) return;
+    if (window.plausible) {
+      window.plausible(name, { props: props || {} });
+    }
+  }
+  // Inject analytics ASAP (no-op if disabled)
+  injectAnalytics();
+</script>
 <style>
 * {
   margin: 0;
@@ -58,6 +86,13 @@ body {
   min-height: 100vh;
   transition: background 0.3s, color 0.3s;
 }
+
+/* Global link styles with theme-aware contrast */
+a { color: var(--primary); text-decoration: underline; }
+a:hover { color: var(--primary-dark); }
+[data-theme="dark"] a { color: #93c5fd; } /* blue-300 for contrast on dark */
+[data-theme="dark"] a:hover { color: #bfdbfe; } /* blue-200 */
+[data-theme="dark"] a:visited { color: #93c5fd; }
 
 .container {
   max-width: 1200px;
@@ -377,6 +412,58 @@ input:focus, select:focus {
 .install-prompt.show {
   display: block;
 }
+
+/* Disclaimer footer and modal */
+.hidden { display: none; }
+.footer {
+  margin-top: 1.5rem;
+}
+.disclaimer {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.disclaimer a { color: var(--primary); cursor: pointer; text-decoration: underline; }
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 2000;
+}
+.modal-backdrop.show { display: block; }
+.modal {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: min(700px, 92vw);
+  max-height: 80vh;
+  overflow: auto;
+  padding: 1rem 1.25rem;
+}
+.modal .close-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  padding: 6px;
+  cursor: pointer;
+}
+.modal h3 { margin-bottom: 0.5rem; color: var(--primary); }
+.modal p { font-size: 0.9rem; margin: 0.5rem 0; }
+.modal .close-row { display: flex; justify-content: flex-end; margin-top: 0.75rem; }
+
+/* Analytics modal extra styles */
+.optout-row { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.75rem; }
 </style>
 </head>
 <body data-theme="light">
@@ -396,6 +483,7 @@ input:focus, select:focus {
         <button class="btn btn-secondary" onclick="toggleTheme()">🌓 Theme</button>
         <button class="btn btn-secondary" onclick="toggleUnits()">📏 Units</button>
         <button class="btn" onclick="showHelp()">❓ Help</button>
+        <button class="btn" onclick="toggleAbout()">ℹ️ About</button>
       </div>
     </div>
   </div>
@@ -413,10 +501,10 @@ input:focus, select:focus {
         <span data-en="Input Parameters" data-es="Parámetros de Entrada">Input Parameters</span>
       </h2>
       
-      <div class="toggle-group">
-        <button class="toggle-btn active" onclick="setCalculationMode('k-factor')">K-Factor</button>
-        <button class="toggle-btn" onclick="setCalculationMode('bend-allowance')">Bend Allowance</button>
-        <button class="toggle-btn" onclick="setCalculationMode('bend-deduction')">Bend Deduction</button>
+      <div class="toggle-group" id="modeToggle">
+        <button class="toggle-btn active" onclick="setCalculationMode('k-factor', this)">K-Factor</button>
+        <button class="toggle-btn" onclick="setCalculationMode('bend-allowance', this)">Bend Allowance</button>
+        <button class="toggle-btn" onclick="setCalculationMode('bend-deduction', this)">Bend Deduction</button>
       </div>
       
       <div class="input-group">
@@ -542,7 +630,8 @@ input:focus, select:focus {
         <div class="help-text" data-en="Enter the known bend deduction value" data-es="Ingrese el valor conocido de deducción de doblez">Enter the known bend deduction value</div>
       </div>
       
-      <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="calculate()">
+      <div id="modeHint" class="help-text" style="min-height: 1.2em;"></div>
+      <button class="btn" style="width: 100%; margin-top: 0.5rem;" onclick="calculate()">
         Calculate
       </button>
     </div>
@@ -556,7 +645,7 @@ input:focus, select:focus {
         <span data-en="Results" data-es="Resultados">Results</span>
       </h2>
       
-      <div class="result-box">
+      <div class="result-box" role="region" aria-live="polite">
         <div class="result-item">
           <span class="result-label">K-Factor</span>
           <span class="result-value" id="resultKFactor">-</span>
@@ -610,11 +699,10 @@ input:focus, select:focus {
     </h2>
     
     <div class="tabs">
-      <button class="tab active" onclick="showTab('kfactorTable')">K-Factor Table</button>
-      <button class="tab" onclick="showTab('materials')">Materials</button>
-      <button class="tab" onclick="showTab('formulas')">Formulas</button>
-      <button class="tab" onclick="showTab('tapDrill')">Tap & Drill</button>
-      <button class="tab" onclick="showTab('rivets')">Rivets</button>
+      <button class="tab active" onclick="showTab('kfactorTable', this)">K-Factor Table</button>
+      <button class="tab" onclick="showTab('materials', this)">Materials</button>
+      <button class="tab" onclick="showTab('formulas', this)">Formulas</button>
+      <button class="tab" onclick="showTab('tapDrill', this)">Tap & Drill</button>
     </div>
     
     <div id="kfactorTable" class="tab-content active">
@@ -792,9 +880,9 @@ input:focus, select:focus {
     
     <div id="tapDrill" class="tab-content">
       <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-        <button class="toggle-btn active" onclick="showDrillType('unified')" style="padding: 0.5rem 1rem;">Unified (UNC/UNF)</button>
-        <button class="toggle-btn" onclick="showDrillType('metric')" style="padding: 0.5rem 1rem;">Metric (ISO)</button>
-        <button class="toggle-btn" onclick="showDrillType('pipe')" style="padding: 0.5rem 1rem;">Pipe (NPT)</button>
+        <button class="toggle-btn active" onclick="showDrillType('unified', this)" style="padding: 0.5rem 1rem;">Unified (UNC/UNF)</button>
+        <button class="toggle-btn" onclick="showDrillType('metric', this)" style="padding: 0.5rem 1rem;">Metric (ISO)</button>
+        <button class="toggle-btn" onclick="showDrillType('pipe', this)" style="padding: 0.5rem 1rem;">Pipe (NPT)</button>
       </div>
       
       <div id="unifiedDrill" class="drill-table">
@@ -1041,182 +1129,96 @@ input:focus, select:focus {
       </div>
     </div>
     
-    <!-- Rivets Reference -->
-    <div id="rivets" class="tab-content">
-      <h3 style="margin-bottom: 1rem;">Aircraft Rivet Reference Chart</h3>
-      
-      <div class="info-box" style="margin-bottom: 1rem;">
-        <p><strong>Rivet Identification:</strong> AN/MS rivets use a standardized marking system</p>
-        <ul style="margin: 0.5rem 0;">
-          <li>No mark = Aluminum alloy 1100 (Pure aluminum, soft)</li>
-          <li>Raised dot (•) = Aluminum alloy 5056</li>
-          <li>Raised double dash (=) = Aluminum alloy 2117-T4</li>
-          <li>Raised cross (+) = Aluminum alloy 2017-T4</li>
-          <li>Raised circle (○) = Aluminum alloy 2024-T4</li>
-          <li>Two raised dots (••) = Aluminum alloy 7050</li>
-        </ul>
-      </div>
-      
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 2rem;">
-        <thead>
-          <tr style="border-bottom: 2px solid var(--border);">
-            <th style="text-align: left; padding: 0.5rem;">Type</th>
-            <th style="text-align: center; padding: 0.5rem;">Head Style</th>
-            <th style="text-align: center; padding: 0.5rem;">Material</th>
-            <th style="text-align: center; padding: 0.5rem;">Marking</th>
-            <th style="text-align: center; padding: 0.5rem;">Use</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN430</td>
-            <td style="text-align: center;">Round</td>
-            <td style="text-align: center;">1100-F</td>
-            <td style="text-align: center;">None</td>
-            <td style="text-align: center;">Soft, non-structural</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN470</td>
-            <td style="text-align: center;">Universal</td>
-            <td style="text-align: center;">2117-T4</td>
-            <td style="text-align: center;">=</td>
-            <td style="text-align: center;">General purpose</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN470</td>
-            <td style="text-align: center;">Universal</td>
-            <td style="text-align: center;">2017-T4</td>
-            <td style="text-align: center;">+</td>
-            <td style="text-align: center;">High strength</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN470</td>
-            <td style="text-align: center;">Universal</td>
-            <td style="text-align: center;">2024-T4</td>
-            <td style="text-align: center;">○</td>
-            <td style="text-align: center;">Ice box rivet</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN470</td>
-            <td style="text-align: center;">Universal</td>
-            <td style="text-align: center;">5056-H32</td>
-            <td style="text-align: center;">•</td>
-            <td style="text-align: center;">Corrosion resistant</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN426</td>
-            <td style="text-align: center;">100° Countersunk</td>
-            <td style="text-align: center;">2117-T4</td>
-            <td style="text-align: center;">=</td>
-            <td style="text-align: center;">Flush installations</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN426</td>
-            <td style="text-align: center;">100° Countersunk</td>
-            <td style="text-align: center;">2017-T4</td>
-            <td style="text-align: center;">+</td>
-            <td style="text-align: center;">High strength flush</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">MS20426</td>
-            <td style="text-align: center;">100° Countersunk</td>
-            <td style="text-align: center;">2024-T4</td>
-            <td style="text-align: center;">○</td>
-            <td style="text-align: center;">Ice box, flush</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">MS20470</td>
-            <td style="text-align: center;">Universal</td>
-            <td style="text-align: center;">Various</td>
-            <td style="text-align: center;">Varies</td>
-            <td style="text-align: center;">Supersedes AN470</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN441</td>
-            <td style="text-align: center;">Flat</td>
-            <td style="text-align: center;">1100-F</td>
-            <td style="text-align: center;">None</td>
-            <td style="text-align: center;">Thin sheets</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 0.5rem;">AN456</td>
-            <td style="text-align: center;">Brazier</td>
-            <td style="text-align: center;">1100-F</td>
-            <td style="text-align: center;">None</td>
-            <td style="text-align: center;">Thin materials</td>
-          </tr>
-        </tbody>
-      </table>
-      
-      <h3 style="margin-bottom: 1rem;">Rivet Size Designation</h3>
-      
-      <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; margin-bottom: 2rem;">
-        <thead>
-          <tr style="border-bottom: 2px solid var(--border);">
-            <th style="text-align: center; padding: 0.5rem;">Dash Number</th>
-            <th style="text-align: center; padding: 0.5rem;">Diameter (in)</th>
-            <th style="text-align: center; padding: 0.5rem;">Diameter (32nds)</th>
-            <th style="text-align: center; padding: 0.5rem;">Drill Size</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-3</td>
-            <td style="text-align: center;">3/32"</td>
-            <td style="text-align: center;">3</td>
-            <td style="text-align: center;">#40 (0.098")</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-4</td>
-            <td style="text-align: center;">1/8"</td>
-            <td style="text-align: center;">4</td>
-            <td style="text-align: center;">#30 (0.1285")</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-5</td>
-            <td style="text-align: center;">5/32"</td>
-            <td style="text-align: center;">5</td>
-            <td style="text-align: center;">#21 (0.159")</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-6</td>
-            <td style="text-align: center;">3/16"</td>
-            <td style="text-align: center;">6</td>
-            <td style="text-align: center;">#11 (0.191")</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-7</td>
-            <td style="text-align: center;">7/32"</td>
-            <td style="text-align: center;">7</td>
-            <td style="text-align: center;">7/32" (0.219")</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-8</td>
-            <td style="text-align: center;">1/4"</td>
-            <td style="text-align: center;">8</td>
-            <td style="text-align: center;">F (0.257")</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-9</td>
-            <td style="text-align: center;">9/32"</td>
-            <td style="text-align: center;">9</td>
-            <td style="text-align: center;">L (0.290")</td>
-          </tr>
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="text-align: center; padding: 0.5rem;">-10</td>
-            <td style="text-align: center;">5/16"</td>
-            <td style="text-align: center;">10</td>
-            <td style="text-align: center;">P (0.323")</td>
-          </tr>
-        </tbody>
-      </table>
-      
+  </div>
+  
+  <!-- About overlay is defined outside container as a modal -->
+
+  <!-- Disclaimer Footer -->
+  <div class="card footer" role="contentinfo">
+    <div class="disclaimer">
+      <p>Conversions and setpoints are reference only. Always use approved data (AMM/SRM/CMM/IPC) and calibrated tools. Follow your organization's procedures.</p>
+      <p>© Ciphracore Systems LLC — All rights reserved · <a href="mailto:ciphracore@protonmail.com">ciphracore@protonmail.com</a></p>
+      <p>
+        <strong>For reference and educational purposes only</strong> — <a onclick="showDisclaimer()">Click for details</a>
+        · <a onclick="showAnalytics()">Analytics & Privacy</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Disclaimer Modal -->
+<div id="disclaimerBackdrop" class="modal-backdrop" aria-hidden="true" onclick="hideDisclaimer(event)">
+  <div class="modal" role="dialog" aria-labelledby="disclaimerTitle" aria-modal="true" onclick="event.stopPropagation()">
+    <button class="close-icon" aria-label="Close" onclick="hideDisclaimer(event)">×</button>
+    <h3 id="disclaimerTitle">Important Legal Disclaimer</h3>
+    <p><strong>Disclaimer:</strong> This application is provided for reference and educational purposes only. It is not an FAA-, EASA-, or OEM-approved source of maintenance or engineering data, and it must not be used as instructions for continued airworthiness, inspection, fabrication, or repair.</p>
+    <p>All bend allowances, bend deductions, K‑factor values, conversions, neutral axis estimates, and related calculations must be verified against the applicable Aircraft Maintenance Manual (AMM), Structural Repair Manual (SRM), Component Maintenance Manual (CMM), engineering orders, or other manufacturer/authority‑approved documents before use.</p>
+    <p>The developer makes no warranties, express or implied, and assumes no liability for errors, omissions, or misuse of this application.</p>
+    <p>By using this application, you acknowledge that you are solely responsible for compliance with all regulatory, engineering, and manufacturer requirements.</p>
+    <p><strong>Safety Notice:</strong> Calculations are based on standard formulas and typical K‑factors. Material behavior varies with alloy, temper, grain direction, tooling, and process. Always validate bend parameters with approved data and, where appropriate, test coupons.</p>
+    <div class="close-row">
+      <button class="btn btn-secondary" onclick="hideDisclaimer(event)">Close</button>
+    </div>
+  </div>
+  
+</div>
+
+<!-- Analytics & Privacy Modal -->
+<div id="analyticsBackdrop" class="modal-backdrop" aria-hidden="true" onclick="hideAnalytics(event)">
+  <div class="modal" role="dialog" aria-labelledby="analyticsTitle" aria-modal="true" onclick="event.stopPropagation()">
+    <button class="close-icon" aria-label="Close" onclick="hideAnalytics(event)">×</button>
+    <h3 id="analyticsTitle">Analytics & Privacy</h3>
+    <p>This app may use privacy‑friendly, cookie‑less analytics to understand overall reach (page views, countries, referrers) and product adoption (e.g., number of installs). No personal data is collected, and no tracking cookies are used.</p>
+    <p>Current configuration:
+      <code id="analyticsStatus">Disabled</code>
+    </p>
+    <ul style="margin-left: 1.25rem;">
+      <li>Page views and geography are aggregated by the analytics provider</li>
+      <li>Install metrics are captured via anonymous events (no user identifiers)</li>
+      <li>You can disable analytics on this device at any time</li>
+    </ul>
+    <div class="optout-row">
+      <input type="checkbox" id="optoutToggle" onchange="toggleAnalyticsOptOut(this.checked)">
+      <label for="optoutToggle">Disable analytics on this device</label>
+    </div>
+    <div class="close-row">
+      <button class="btn btn-secondary" onclick="hideAnalytics(event)">Close</button>
+    </div>
+  </div>
+</div>
+<!-- About Modal -->
+<div id="aboutBackdrop" class="modal-backdrop" aria-hidden="true" onclick="hideAbout(event)">
+  <div class="modal" role="dialog" aria-labelledby="aboutTitle" aria-modal="true" onclick="event.stopPropagation()">
+    <button class="close-icon" aria-label="Close" onclick="hideAbout(event)">×</button>
+    <div class="card" id="about">
+      <h2 id="aboutTitle" style="margin-top: 0;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12" y2="8"/>
+        </svg>
+        About K‑Factor Calculator
+      </h2>
       <div class="info-box">
-        <h3>Rivet Designation System</h3>
-        <p>The first dash number indicates diameter in 1/32" increments.</p>
-        <p>The second dash number indicates length in 1/16" increments.</p>
-        <p><strong>Example:</strong> AN470-4-6 = Universal head, 1/8" diameter (4/32"), 3/8" long (6/16")</p>
-        <p style="margin-top: 0.5rem;"><em>For installation procedures, consult the appropriate Structural Repair Manual (SRM)</em></p>
+        <p>K‑Factor Bend Calculator is a precision sheet‑metal bend reference and calculator for fabricators, engineers, and machinists. It delivers quick, accurate K‑factor, Bend Allowance (BA), Bend Deduction (BD), and neutral‑axis results in a mobile‑friendly interface designed for shop‑floor use.</p>
+      </div>
+      <div class="info-box">
+        <h3>💼 Partnership & Sponsorship</h3>
+        <p>MRO facilities, training organizations, and OEMs: Contact us for partnership rates and co‑development opportunities.</p>
+      </div>
+      <div class="info-box">
+        <h3>📩 Contact</h3>
+        <p>✉️ <a href="mailto:ciphracore@protonmail.com">ciphracore@protonmail.com</a><br>
+        💬 <em>"Describe your manufacturing or maintenance calculation challenge"</em><br>
+        Response time: 24–48 hours<br>
+        Available for: Tool development, enterprise licensing, training integration, and tailored solutions.</p>
+      </div>
+      <div class="info-box">
+        <h3>🔗 Related App</h3>
+        <p><strong>TorqSpec Pro</strong> — precision torque reference and conversion. <a id="torqproLink" href="https://amttorque.netlify.app/" rel="noopener" target="_blank">Open TorqSpec Pro</a></p>
+      </div>
+      <div class="close-row">
+        <button class="btn btn-secondary" onclick="hideAbout(event)">Close</button>
       </div>
     </div>
   </div>
@@ -1241,6 +1243,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   document.getElementById('installPrompt').classList.add('show');
+  sendAnalyticsEvent('pwa_install_prompt_shown');
 });
 
 function installApp() {
@@ -1249,6 +1252,7 @@ function installApp() {
     deferredPrompt.userChoice.then((result) => {
       deferredPrompt = null;
       document.getElementById('installPrompt').classList.remove('show');
+      sendAnalyticsEvent('pwa_install_prompt_choice', { outcome: result?.outcome || 'unknown' });
     });
   }
 }
@@ -1285,17 +1289,31 @@ function updateLanguage() {
 }
 
 // Theme toggle
+function updateThemeMeta(color) {
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute('content', color);
+}
+
 function toggleTheme() {
   const body = document.body;
   const currentTheme = body.getAttribute('data-theme');
-  body.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
-  localStorage.setItem('theme', body.getAttribute('data-theme'));
+  const next = currentTheme === 'light' ? 'dark' : 'light';
+  body.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  // Update theme-color to match theme
+  updateThemeMeta(next === 'dark' ? '#111827' : '#2563eb');
 }
 
 // Load saved theme and language
 document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
   document.body.setAttribute('data-theme', savedTheme);
+  updateThemeMeta(savedTheme === 'dark' ? '#111827' : '#2563eb');
   
   const savedLanguage = localStorage.getItem('language') || 'en';
   currentLanguage = savedLanguage;
@@ -1322,20 +1340,21 @@ function toggleUnits() {
 }
 
 // Calculation mode
-function setCalculationMode(mode) {
+function setCalculationMode(mode, el) {
   currentMode = mode;
   
   // Update toggle buttons
-  document.querySelectorAll('.toggle-btn').forEach(btn => {
+  document.querySelectorAll('#modeToggle .toggle-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  event.target.classList.add('active');
+  if (el) el.classList.add('active');
   
   // Show/hide appropriate input fields based on mode
   const kFactorInput = document.getElementById('kFactorInput');
   const bendAllowanceInput = document.getElementById('bendAllowanceInput');
   const bendDeductionInput = document.getElementById('bendDeductionInput');
   const customKFactorGroup = document.getElementById('customKFactorGroup');
+  const modeHint = document.getElementById('modeHint');
   
   // Hide all mode-specific inputs first
   kFactorInput.style.display = 'none';
@@ -1351,10 +1370,15 @@ function setCalculationMode(mode) {
     if (material.value === 'custom') {
       customKFactorGroup.style.display = 'block';
     }
+    modeHint.textContent = '';
   } else if (mode === 'bend-allowance') {
     bendAllowanceInput.style.display = 'block';
+    document.getElementById('bendAllowanceValue').focus();
+    modeHint.textContent = 'Enter thickness, radius, angle and known BA.';
   } else if (mode === 'bend-deduction') {
     bendDeductionInput.style.display = 'block';
+    document.getElementById('bendDeductionValue').focus();
+    modeHint.textContent = 'Enter thickness, radius, angle and known BD.';
   }
   
   // Recalculate with new mode
@@ -1456,7 +1480,10 @@ function calculate() {
   const bendAngle = parseFloat(document.getElementById('bendAngle').value);
   
   if (!thickness || !bendRadius || !bendAngle) {
-    // Don't show alert on initial load or mode switch
+    const hint = document.getElementById('modeHint');
+    if (hint && currentMode !== 'k-factor') {
+      hint.textContent = 'Enter thickness, radius and angle to use this mode.';
+    }
     return;
   }
   
@@ -1615,6 +1642,93 @@ function updateZoomDisplay() {
   if (zoomLevel) {
     zoomLevel.textContent = Math.round(currentZoom * 100) + '%';
   }
+}
+
+function scrollToAbout() {
+  const el = document.getElementById('about');
+  if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showAbout() {
+  const el = document.getElementById('about');
+  if (el) {
+    el.classList.remove('hidden');
+    el.setAttribute('aria-hidden', 'false');
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+}
+
+function showDisclaimer() {
+  const el = document.getElementById('disclaimerBackdrop');
+  if (el) {
+    el.classList.add('show');
+    el.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function hideDisclaimer(e) {
+  const el = document.getElementById('disclaimerBackdrop');
+  if (el) {
+    el.classList.remove('show');
+    el.setAttribute('aria-hidden', 'true');
+  }
+  if (e) e.stopPropagation();
+}
+
+function showAnalytics() {
+  const el = document.getElementById('analyticsBackdrop');
+  if (el) {
+    el.classList.add('show');
+    el.setAttribute('aria-hidden', 'false');
+    // Update status text and toggle state
+    const status = document.getElementById('analyticsStatus');
+    if (status) status.textContent = window.analyticsConfig?.enabled ? 
+      `${window.analyticsConfig.provider || 'unknown'}${window.analyticsOptOut ? ' (opted out on this device)' : ''}` : 'Disabled';
+    const toggle = document.getElementById('optoutToggle');
+    if (toggle) toggle.checked = !!window.analyticsOptOut;
+  }
+}
+
+function hideAnalytics(e) {
+  const el = document.getElementById('analyticsBackdrop');
+  if (el) {
+    el.classList.remove('show');
+    el.setAttribute('aria-hidden', 'true');
+  }
+  if (e) e.stopPropagation();
+}
+
+function toggleAnalyticsOptOut(checked) {
+  window.analyticsOptOut = !!checked;
+  localStorage.setItem('analyticsOptOut', window.analyticsOptOut ? 'true' : 'false');
+}
+
+function toggleAbout() {
+  const el = document.getElementById('aboutBackdrop');
+  if (!el) return;
+  const showing = el.classList.contains('show');
+  if (showing) {
+    hideAbout();
+  } else {
+    showAbout();
+  }
+}
+
+function showAbout() {
+  const el = document.getElementById('aboutBackdrop');
+  if (el) {
+    el.classList.add('show');
+    el.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function hideAbout(e) {
+  const el = document.getElementById('aboutBackdrop');
+  if (el) {
+    el.classList.remove('show');
+    el.setAttribute('aria-hidden', 'true');
+  }
+  if (e) e.stopPropagation();
 }
 
 // Diagram function removed - was not providing useful information
@@ -1864,12 +1978,12 @@ function drawDiagram(R, T, angle, kFactor) {
 } */
 
 // Tab switching
-function showTab(tabId) {
+function showTab(tabId, el) {
   // Update tab buttons
   document.querySelectorAll('.tab').forEach(tab => {
     tab.classList.remove('active');
   });
-  event.target.classList.add('active');
+  if (el) el.classList.add('active');
   
   // Update tab content
   document.querySelectorAll('.tab-content').forEach(content => {
@@ -1879,12 +1993,12 @@ function showTab(tabId) {
 }
 
 // Drill type switching
-function showDrillType(type) {
+function showDrillType(type, el) {
   // Update toggle buttons
   document.querySelectorAll('#tapDrill .toggle-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  event.target.classList.add('active');
+  if (el) el.classList.add('active');
   
   // Hide all drill tables
   document.getElementById('unifiedDrill').style.display = 'none';
@@ -1929,8 +2043,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set default units based on locale
   if (navigator.language.startsWith('en-US')) {
     currentUnits = 'imperial';
-    toggleUnits();
-    toggleUnits(); // Toggle twice to trigger update
+    // Set selects directly to inches
+    ['thicknessUnit', 'radiusUnit', 'baUnit', 'bdUnit'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = 'in';
+    });
   }
   
   // Register service worker (disable in development)
@@ -1950,6 +2067,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+});
+
+// Hide install prompt once installed
+window.addEventListener('appinstalled', () => {
+  const prompt = document.getElementById('installPrompt');
+  if (prompt) prompt.classList.remove('show');
+  sendAnalyticsEvent('pwa_installed');
 });
 </script>
 
