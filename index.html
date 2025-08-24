@@ -1262,6 +1262,7 @@ function toggleLanguage() {
   currentLanguage = currentLanguage === 'en' ? 'es' : 'en';
   updateLanguage();
   localStorage.setItem('language', currentLanguage);
+  sendAnalyticsEvent && sendAnalyticsEvent('language_toggle', { lang: currentLanguage });
 }
 
 function updateLanguage() {
@@ -1339,6 +1340,7 @@ function toggleUnits() {
   if (document.getElementById('thickness').value) {
     calculate();
   }
+  sendAnalyticsEvent && sendAnalyticsEvent('units_toggle', { units: currentUnits });
 }
 
 // Calculation mode
