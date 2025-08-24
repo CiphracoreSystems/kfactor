@@ -12,29 +12,23 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png">
 <script>
-  // Analytics configuration (disabled by default). To enable Plausible, set enabled:true and domain.
-  // Example: window.analyticsConfig = { enabled: true, provider: 'plausible', domain: 'your-site.netlify.app' };
-  window.analyticsConfig = window.analyticsConfig || { enabled: false, provider: 'plausible', domain: '' };
+  // Analytics configuration
+  window.analyticsConfig = window.analyticsConfig || { enabled: true, provider: 'plausible', domain: 'kfactorcalculator.netlify.app' };
   window.analyticsOptOut = localStorage.getItem('analyticsOptOut') === 'true';
-  function injectAnalytics() {
-    if (!window.analyticsConfig.enabled || window.analyticsOptOut) return;
-    if (window.analyticsConfig.provider === 'plausible' && window.analyticsConfig.domain) {
-      const s = document.createElement('script');
-      s.defer = true;
-      s.setAttribute('data-domain', window.analyticsConfig.domain);
-      s.src = 'https://plausible.io/js/script.js';
-      document.head.appendChild(s);
-    }
-  }
+  // Plausible helper to send tagged events safely
   function sendAnalyticsEvent(name, props) {
     if (window.analyticsOptOut) return;
     if (window.plausible) {
       window.plausible(name, { props: props || {} });
     }
   }
-  // Inject analytics ASAP (no-op if disabled)
-  injectAnalytics();
+  // Respect opt-out for Plausible pageviews
+  if (window.analyticsOptOut) {
+    try { localStorage.setItem('plausible_ignore', 'true'); } catch (e) {}
+  }
 </script>
+<!-- Static Plausible snippet for verification and tracking (privacy-friendly, cookie-less) -->
+<script defer data-domain="kfactorcalculator.netlify.app" src="https://plausible.io/js/script.outbound-links.pageview-props.tagged-events.js"></script>
 <style>
 * {
   margin: 0;
@@ -631,7 +625,7 @@ input:focus, select:focus {
       </div>
       
       <div id="modeHint" class="help-text" style="min-height: 1.2em;"></div>
-      <button class="btn" style="width: 100%; margin-top: 0.5rem;" onclick="calculate()">
+      <button class="btn" style="width: 100%; margin-top: 0.5rem;" onclick="onCalculateClicked()">
         Calculate
       </button>
     </div>
@@ -1309,8 +1303,8 @@ function toggleTheme() {
   updateThemeMeta(next === 'dark' ? '#111827' : '#2563eb');
 }
 
-// Load saved theme and language
-document.addEventListener('DOMContentLoaded', () => {
+  // Load saved theme and language
+  document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'light';
   document.body.setAttribute('data-theme', savedTheme);
   updateThemeMeta(savedTheme === 'dark' ? '#111827' : '#2563eb');
@@ -1318,6 +1312,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedLanguage = localStorage.getItem('language') || 'en';
   currentLanguage = savedLanguage;
   updateLanguage();
+  
+  // Track outbound click to TorqSpec Pro
+  const tp = document.getElementById('torqproLink');
+  if (tp) {
+    tp.addEventListener('click', function() {
+      sendAnalyticsEvent('outbound_torqspec', { href: this.href });
+    });
+  }
 });
 
 // Units toggle
@@ -1590,6 +1592,19 @@ function calculate() {
   // Diagram removed - was not providing useful information
 }
 
+// Button-initiated calculation handler to send analytics once per explicit action
+function onCalculateClicked() {
+  // Perform calculation
+  calculate();
+  // If inputs are valid (results visible), send event
+  const thickness = parseFloat(document.getElementById('thickness').value);
+  const bendRadius = parseFloat(document.getElementById('bendRadius').value);
+  const bendAngle = parseFloat(document.getElementById('bendAngle').value);
+  if (thickness && bendRadius && bendAngle && !window.analyticsOptOut) {
+    sendAnalyticsEvent('calculate_used', { mode: currentMode, units: currentUnits });
+  }
+}
+
 // Global zoom level
 let currentZoom = 1.0;
 
@@ -1701,6 +1716,14 @@ function hideAnalytics(e) {
 function toggleAnalyticsOptOut(checked) {
   window.analyticsOptOut = !!checked;
   localStorage.setItem('analyticsOptOut', window.analyticsOptOut ? 'true' : 'false');
+  // Also set Plausible's own ignore flag so pageviews are not tracked
+  try {
+    if (window.analyticsOptOut) {
+      localStorage.setItem('plausible_ignore', 'true');
+    } else {
+      localStorage.removeItem('plausible_ignore');
+    }
+  } catch (e) {}
 }
 
 function toggleAbout() {
